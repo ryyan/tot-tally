@@ -1,0 +1,109 @@
+<html>
+  <link rel="stylesheet" href="static/style.css" />
+  <title>Tot Tally</title>
+
+  <h1>Tot Tally</h1>
+  <h2>{{.Name}}</h2>
+
+  <details open>
+    <summary>Feeds</summary>
+
+    <form method="POST">
+      <label for="ounces">Ounces</label>
+      <input
+        type="range"
+        id="ounces"
+        name="ounces"
+        list="ounces-values"
+        min="0"
+        max="9"
+        value="0"
+        step="1"
+      />
+      <datalist id="ounces-values">
+        <option value="0" label="0">0</option>
+        <option value="1" label="1">1</option>
+        <option value="2" label="2">2</option>
+        <option value="3" label="3">3</option>
+        <option value="4" label="4">4</option>
+        <option value="5" label="5">5</option>
+        <option value="6" label="6">6</option>
+        <option value="7" label="7">7</option>
+        <option value="8" label="8">8</option>
+        <option value="9" label="9">9</option>
+      </datalist>
+
+      <input
+        type="text"
+        name="note"
+        placeholder="Note (Optional)"
+        maxlength="60"
+      />
+      <input type="submit" value="Record Feeding" />
+    </form>
+
+    <table>
+      <tr>
+        <th>Time</th>
+        <th>Ounces</th>
+        <th>Note</th>
+      </tr>
+      {{range .Feeds}}
+      <tr>
+        <td>{{.Time}}</td>
+        <td>{{.Ounces}}</td>
+        <td>{{.Note}}</td>
+      </tr>
+      {{end}}
+    </table>
+  </details>
+
+  <details>
+    <summary>Soils</summary>
+    <form method="POST">
+      <label for="wet">Wet</label>
+      <input
+        type="range"
+        id="wet"
+        name="wet"
+        list="wet-values"
+        min="0"
+        max="3"
+        value="0"
+        step="1"
+      />
+      <datalist id="wet-values">
+        <option value="None" label="None">None</option>
+        <option value="Light" label="Light">Light</option>
+        <option value="Medium" label="Medium">Medium</option>
+        <option value="Heavy" label="Heavy">Heavy</option>
+      </datalist>
+
+      <label for="soil">Soil</label>
+      <input
+        type="range"
+        id="soil"
+        name="soil"
+        list="soil-values"
+        min="0"
+        max="3"
+        value="0"
+        step="1"
+      />
+      <datalist id="soil-values">
+        <option value="None" label="None">None</option>
+        <option value="Light" label="Light">Light</option>
+        <option value="Medium" label="Medium">Medium</option>
+        <option value="Heavy" label="Heavy">Heavy</option>
+      </datalist>
+
+      <input
+        type="text"
+        name="note"
+        placeholder="Note (Optional)"
+        maxlength="60"
+      />
+      <input type="submit" value="Record Soil" />
+    </form>
+  </details>
+</html>

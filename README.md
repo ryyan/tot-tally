@@ -2,9 +2,16 @@
 
 Tally your tot's ins and outs
 
-## Running
+## Development
+
+- Install [go](https://go.dev/) (optionally using [gvm](https://github.com/moovweb/gvm))
+- Uses [sqlc](https://docs.sqlc.dev/) to auto-generate SQL code (`totdb` directory)
+  ```sh
+  sqlc generate
+  ```
+
+## Run
 
 ```sh
-cd api
 go build && ./tot-tally
 ```
