@@ -25,7 +25,7 @@ SELECT *
 FROM feeds
 WHERE baby_id = ?
 ORDER BY created_at DESC
-LIMIT 30;
+LIMIT 20;
 
 -- name: CreateSoil :one
 INSERT INTO soils (id, baby_id, created_at, note, wet, soil)
@@ -37,4 +37,4 @@ SELECT *
 FROM soils
 WHERE baby_id = ?
 ORDER BY created_at DESC
-LIMIT 30;
+LIMIT 20;
