@@ -1,6 +1,7 @@
 CREATE TABLE babies (
     id TEXT PRIMARY KEY NOT NULL,
-    name TEXT NOT NULL
+    name TEXT NOT NULL,
+    timezone TEXT NOT NULL
 );
 
 CREATE TABLE feeds (

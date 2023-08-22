@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"database/sql"
 	"encoding/base64"
+	"errors"
 	"html/template"
 	"log"
 	"net/http"
@@ -103,8 +104,7 @@ type HandlerE = func(w http.ResponseWriter, r *http.Request) error
 
 func handlerWrapper(handler HandlerE) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
-		log.Println(req)
-		log.Printf("%s %s %s\n", time.Now().UTC(), req.Method, req.URL.Path)
+		log.Printf("%s %s\n", req.Method, req.URL.Path)
 		err := handler(w, req)
 
 		if err != nil {
@@ -132,20 +132,25 @@ func rootHandler(w http.ResponseWriter, req *http.Request) error {
 				return err
 			}
 
-			log.Printf("ListFeeds id=%s\n", baby_id)
+			tzLocation, err := time.LoadLocation(getBaby.Timezone)
+			if err != nil {
+				return err
+			}
+
+			log.Printf("ListFeeds baby_id=%s\n", baby_id)
 			listFeeds, err := queries.ListFeeds(ctx, baby_id)
 			if err != nil {
 				return err
 			}
 
-			feeds := make([]Feed, len(listFeeds))
-			for _, feed := range listFeeds {
-				formatted_time := feed.CreatedAt.Format("2006-01-02 3:4 PM")
+			formatted_feeds := make([]Feed, len(listFeeds))
+			for i, feed := range listFeeds {
+				formatted_time := feed.CreatedAt.In(tzLocation).Format("2006-01-02 03:04 PM")
 				ounces_str := strconv.FormatInt(feed.Ounces, 10)
-				feeds = append(feeds, Feed{formatted_time, ounces_str, feed.Note})
+				formatted_feeds[i] = Feed{formatted_time, ounces_str, feed.Note}
 			}
 
-			data := TallyPageData{Name: getBaby.Name, Feeds: feeds}
+			data := TallyPageData{Name: getBaby.Name, Feeds: formatted_feeds}
 			templateTally := template.Must(template.ParseFiles("assets/tally.html"))
 			templateTally.Execute(w, data)
 		}
@@ -153,13 +158,19 @@ func rootHandler(w http.ResponseWriter, req *http.Request) error {
 		if baby_id == "" {
 			// Create new baby
 			name := req.FormValue("name")
+			timezone := req.FormValue(("timezone"))
+
+			if strings.TrimSpace(name) == "" {
+				return errors.New("name cannot be empty")
+			}
+
 			new_baby_id, err := generateId()
 			if err != nil {
 				return err
 			}
 
-			log.Printf("CreateBaby id=%s, name=%s\n", new_baby_id, name)
-			newBaby, err := queries.CreateBaby(ctx, totdb.CreateBabyParams{new_baby_id, name})
+			log.Printf("CreateBaby id=%s, name=%s timezone=%s\n", new_baby_id, name, timezone)
+			newBaby, err := queries.CreateBaby(ctx, totdb.CreateBabyParams{ID: new_baby_id, Name: name, Timezone: timezone})
 			if err != nil {
 				return err
 			}
@@ -167,7 +178,7 @@ func rootHandler(w http.ResponseWriter, req *http.Request) error {
 			new_url := "/" + newBaby.ID
 			http.Redirect(w, req, new_url, http.StatusSeeOther)
 		} else {
-			// Create new feed/poop tally
+			// Create new feed/soil tally
 			note := req.FormValue("note")
 			ounces := req.FormValue("ounces")
 			ounces_str, err := strconv.ParseInt(ounces, 10, 64)
@@ -181,7 +192,7 @@ func rootHandler(w http.ResponseWriter, req *http.Request) error {
 			}
 
 			log.Printf("CreateFeed id=%s, baby_id=%s, note=%s, ounces=%s", new_id, baby_id, note, ounces)
-			_, err = queries.CreateFeed(ctx, totdb.CreateFeedParams{new_id, baby_id, time.Now(), note, ounces_str})
+			_, err = queries.CreateFeed(ctx, totdb.CreateFeedParams{new_id, baby_id, time.Now().UTC(), note, ounces_str})
 			if err != nil {
 				return err
 			}

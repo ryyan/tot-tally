@@ -1,6 +1,6 @@
 -- name: CreateBaby :one
-INSERT INTO babies (id, name)
-VALUES (?, ?)
+INSERT INTO babies (id, name, timezone)
+VALUES (?, ?, ?)
 RETURNING *;
 
 -- name: GetBaby :one
@@ -8,6 +8,12 @@ SELECT *
 FROM babies
 WHERE id = ?
 LIMIT 1;
+
+-- name: UpdateTimezone :one
+UPDATE babies
+SET timezone = ?
+WHERE id = ?
+RETURNING *;
 
 -- name: CreateFeed :one
 INSERT INTO feeds (id, baby_id, created_at, note, ounces)

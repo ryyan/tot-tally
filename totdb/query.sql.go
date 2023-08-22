@@ -11,20 +11,21 @@ import (
 )
 
 const createBaby = `-- name: CreateBaby :one
-INSERT INTO babies (id, name)
-VALUES (?, ?)
-RETURNING id, name
+INSERT INTO babies (id, name, timezone)
+VALUES (?, ?, ?)
+RETURNING id, name, timezone
 `
 
 type CreateBabyParams struct {
-	ID   string
-	Name string
+	ID       string
+	Name     string
+	Timezone string
 }
 
 func (q *Queries) CreateBaby(ctx context.Context, arg CreateBabyParams) (Baby, error) {
-	row := q.db.QueryRowContext(ctx, createBaby, arg.ID, arg.Name)
+	row := q.db.QueryRowContext(ctx, createBaby, arg.ID, arg.Name, arg.Timezone)
 	var i Baby
-	err := row.Scan(&i.ID, &i.Name)
+	err := row.Scan(&i.ID, &i.Name, &i.Timezone)
 	return i, err
 }
 
@@ -98,7 +99,7 @@ func (q *Queries) CreateSoil(ctx context.Context, arg CreateSoilParams) (Soil, e
 }
 
 const getBaby = `-- name: GetBaby :one
-SELECT id, name
+SELECT id, name, timezone
 FROM babies
 WHERE id = ?
 LIMIT 1
@@ -107,7 +108,7 @@ LIMIT 1
 func (q *Queries) GetBaby(ctx context.Context, id string) (Baby, error) {
 	row := q.db.QueryRowContext(ctx, getBaby, id)
 	var i Baby
-	err := row.Scan(&i.ID, &i.Name)
+	err := row.Scan(&i.ID, &i.Name, &i.Timezone)
 	return i, err
 }
 
@@ -184,4 +185,23 @@ func (q *Queries) ListSoils(ctx context.Context, babyID string) ([]Soil, error) 
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateTimezone = `-- name: UpdateTimezone :one
+UPDATE babies
+SET timezone = ?
+WHERE id = ?
+RETURNING id, name, timezone
+`
+
+type UpdateTimezoneParams struct {
+	Timezone string
+	ID       string
+}
+
+func (q *Queries) UpdateTimezone(ctx context.Context, arg UpdateTimezoneParams) (Baby, error) {
+	row := q.db.QueryRowContext(ctx, updateTimezone, arg.Timezone, arg.ID)
+	var i Baby
+	err := row.Scan(&i.ID, &i.Name, &i.Timezone)
+	return i, err
 }

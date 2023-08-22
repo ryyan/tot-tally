@@ -9,8 +9,9 @@ import (
 )
 
 type Baby struct {
-	ID   string
-	Name string
+	ID       string
+	Name     string
+	Timezone string
 }
 
 type Feed struct {
