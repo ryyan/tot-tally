@@ -1,6 +1,10 @@
 # Tot Tally
 
-Tally your tot's ins and outs
+Tally your tot's ins and outs!
+
+No logins, passwords, or javascript!
+
+https://github.com/ryyan/tot-tally/assets/4228816/09002566-09d5-4e29-80c6-98f9ea394984
 
 ## Development
 
@@ -13,5 +17,6 @@ Tally your tot's ins and outs
 ## Run
 
 ```sh
-go build && ./tot-tally
+go build
+./tot-tally
 ```
