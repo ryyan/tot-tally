@@ -37,8 +37,8 @@ const (
 
 var (
 	// TODO: Use these before deploying to prod
-	//templateIndex = template.Must(template.ParseFiles("assets/index.html"))
-	//templateTally = template.Must(template.ParseFiles("assets/tally.html"))
+	templateIndex = template.Must(template.ParseFiles("assets/index.html"))
+	templateTally = template.Must(template.ParseFiles("assets/tally.html"))
 
 	// https://docs.sqlc.dev/en/latest/tutorials/getting-started-sqlite.html
 	//go:embed schema.sql
@@ -95,12 +95,14 @@ func main() {
 }
 
 func initializeDatabase() {
-	db, err := sql.Open("sqlite3", ":memory:")
+	db, err := sql.Open("sqlite3", "totdb.db")
 	check(err)
 
 	// Create database tables
 	_, err = db.ExecContext(ctx, ddl)
-	check(err)
+	if err.Error() != "table babies already exists" {
+		log.Fatal(err)
+	}
 
 	// Enable queries
 	queries = totdb.New(db)
@@ -129,7 +131,6 @@ func rootHandler(w http.ResponseWriter, req *http.Request) error {
 	case http.MethodGet:
 		if baby_id == "" {
 			// Index page
-			templateIndex := template.Must(template.ParseFiles("assets/index.html"))
 			templateIndex.Execute(w, nil)
 		} else {
 			// Tally page
@@ -172,7 +173,6 @@ func rootHandler(w http.ResponseWriter, req *http.Request) error {
 			}
 
 			data := TallyPageData{Name: getBaby.Name, Feeds: formattedFeeds, Soils: formattedSoils}
-			templateTally := template.Must(template.ParseFiles("assets/tally.html"))
 			templateTally.Execute(w, data)
 		}
 	case http.MethodPost:

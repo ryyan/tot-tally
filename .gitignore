@@ -21,3 +21,4 @@
 go.work
 
 tot-tally
+*.db
