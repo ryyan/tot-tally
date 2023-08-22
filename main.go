@@ -24,14 +24,7 @@ const (
 	// Port to run the server on
 	Port = ":5000"
 
-	// TallyDir is the directory that tallies will be saved to
-	// The filenames will be <random ID>-<kind of tally, ex: feed).csv
-	TallyDir = ".tally"
-
-	FeedFileSuffix   = "feed"
-	DiaperFileSuffix = "diaper"
-
-	// Unique ID size
+	// Unique ID/Primary Key size
 	IdSize = 33
 )
 
@@ -100,7 +93,7 @@ func initializeDatabase() {
 
 	// Create database tables
 	_, err = db.ExecContext(ctx, ddl)
-	if err.Error() != "table babies already exists" {
+	if err != nil && err.Error() != "table babies already exists" {
 		log.Fatal(err)
 	}
 
@@ -134,45 +127,11 @@ func rootHandler(w http.ResponseWriter, req *http.Request) error {
 			templateIndex.Execute(w, nil)
 		} else {
 			// Tally page
-			log.Printf("GetBaby id=%s\n", baby_id)
-			getBaby, err := queries.GetBaby(ctx, baby_id)
+			data, err := getTallyPageData(baby_id)
 			if err != nil {
 				return err
 			}
 
-			tzLocation, err := time.LoadLocation(getBaby.Timezone)
-			if err != nil {
-				return err
-			}
-
-			// Get and format list of Feeds
-			log.Printf("ListFeeds baby_id=%s\n", baby_id)
-			listFeeds, err := queries.ListFeeds(ctx, baby_id)
-			if err != nil {
-				return err
-			}
-
-			formattedFeeds := make([]Feed, len(listFeeds))
-			for i, feed := range listFeeds {
-				formattedTime := feed.CreatedAt.In(tzLocation).Format("2006-01-02 03:04 PM")
-				ounces_str := strconv.FormatInt(feed.Ounces, 10)
-				formattedFeeds[i] = Feed{formattedTime, feed.Note, ounces_str}
-			}
-
-			// Get and format list of Soils
-			log.Printf("ListSoils baby_id=%s\n", baby_id)
-			listSoils, err := queries.ListSoils(ctx, baby_id)
-			if err != nil {
-				return err
-			}
-
-			formattedSoils := make([]Soil, len(listSoils))
-			for i, soil := range listSoils {
-				formattedTime := soil.CreatedAt.In(tzLocation).Format("2006-01-02 03:04 PM")
-				formattedSoils[i] = Soil{formattedTime, soil.Note, soil.Wet, soil.Soil}
-			}
-
-			data := TallyPageData{Name: getBaby.Name, Feeds: formattedFeeds, Soils: formattedSoils}
 			templateTally.Execute(w, data)
 		}
 	case http.MethodPost:
@@ -197,42 +156,101 @@ func rootHandler(w http.ResponseWriter, req *http.Request) error {
 				return err
 			}
 
-			new_url := "/" + newBaby.ID
-			http.Redirect(w, req, new_url, http.StatusSeeOther)
+			baby_id = newBaby.ID
 		} else {
 			if req.FormValue("ounces") != "" {
 				// Create new feed
-				note := req.FormValue("note")
-				ounces := req.FormValue("ounces")
-				ounces_str, err := strconv.ParseInt(ounces, 10, 64)
-				if err != nil {
-					panic(err)
-				}
-
-				log.Printf("CreateFeed id=%s, baby_id=%s, note=%s, ounces=%s", new_id, baby_id, note, ounces)
-				_, err = queries.CreateFeed(ctx, totdb.CreateFeedParams{new_id, baby_id, time.Now().UTC(), note, ounces_str})
+				err := createFeed(req, new_id, baby_id)
 				if err != nil {
 					return err
 				}
-
-				new_url := "/" + baby_id
-				http.Redirect(w, req, new_url, http.StatusSeeOther)
 			} else if req.FormValue("soil") != "" {
 				// Create new soil
-				note := req.FormValue("note")
-				wet := req.FormValue("wet")
-				soil := req.FormValue("soil")
-
-				log.Printf("CreateSoil id=%s, baby_id=%s, note=%s, wet=%s, soil=%s", new_id, baby_id, note, wet, soil)
-				_, err = queries.CreateSoil(ctx, totdb.CreateSoilParams{ID: new_id, BabyID: baby_id, CreatedAt: time.Now().UTC(), Note: note, Wet: SoilMap[wet], Soil: SoilMap[soil]})
+				err := createSoil(req, new_id, baby_id)
 				if err != nil {
 					return err
 				}
-
-				new_url := "/" + baby_id
-				http.Redirect(w, req, new_url, http.StatusSeeOther)
 			}
 		}
+
+		// After POST, redirect to http://<url>/<baby_id>
+		new_url := "/" + baby_id
+		http.Redirect(w, req, new_url, http.StatusSeeOther)
+	}
+
+	return nil
+}
+
+func getTallyPageData(baby_id string) (TallyPageData, error) {
+	// Get baby
+	log.Printf("GetBaby id=%s\n", baby_id)
+	getBaby, err := queries.GetBaby(ctx, baby_id)
+	if err != nil {
+		return TallyPageData{}, err
+	}
+
+	tzLocation, err := time.LoadLocation(getBaby.Timezone)
+	if err != nil {
+		return TallyPageData{}, err
+	}
+
+	// Get and format list of Feeds
+	log.Printf("ListFeeds baby_id=%s\n", baby_id)
+	listFeeds, err := queries.ListFeeds(ctx, baby_id)
+	if err != nil {
+		return TallyPageData{}, err
+	}
+
+	formattedFeeds := make([]Feed, len(listFeeds))
+	for i, feed := range listFeeds {
+		formattedTime := feed.CreatedAt.In(tzLocation).Format("2006-01-02 03:04 PM")
+		ounces_str := strconv.FormatInt(feed.Ounces, 10)
+		formattedFeeds[i] = Feed{formattedTime, feed.Note, ounces_str}
+	}
+
+	// Get and format list of Soils
+	log.Printf("ListSoils baby_id=%s\n", baby_id)
+	listSoils, err := queries.ListSoils(ctx, baby_id)
+	if err != nil {
+		return TallyPageData{}, err
+	}
+
+	formattedSoils := make([]Soil, len(listSoils))
+	for i, soil := range listSoils {
+		formattedTime := soil.CreatedAt.In(tzLocation).Format("2006-01-02 03:04 PM")
+		formattedSoils[i] = Soil{formattedTime, soil.Note, soil.Wet, soil.Soil}
+	}
+
+	data := TallyPageData{Name: getBaby.Name, Feeds: formattedFeeds, Soils: formattedSoils}
+	return data, nil
+}
+
+func createFeed(req *http.Request, new_id string, baby_id string) error {
+	note := req.FormValue("note")
+	ounces := req.FormValue("ounces")
+	ounces_str, err := strconv.ParseInt(ounces, 10, 64)
+	if err != nil {
+		return err
+	}
+
+	log.Printf("CreateFeed id=%s, baby_id=%s, note=%s, ounces=%s", new_id, baby_id, note, ounces)
+	_, err = queries.CreateFeed(ctx, totdb.CreateFeedParams{new_id, baby_id, time.Now().UTC(), note, ounces_str})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func createSoil(req *http.Request, new_id string, baby_id string) error {
+	note := req.FormValue("note")
+	wet := req.FormValue("wet")
+	soil := req.FormValue("soil")
+
+	log.Printf("CreateSoil id=%s, baby_id=%s, note=%s, wet=%s, soil=%s", new_id, baby_id, note, wet, soil)
+	_, err := queries.CreateSoil(ctx, totdb.CreateSoilParams{ID: new_id, BabyID: baby_id, CreatedAt: time.Now().UTC(), Note: note, Wet: SoilMap[wet], Soil: SoilMap[soil]})
+	if err != nil {
+		return err
 	}
 
 	return nil
