@@ -27,6 +27,6 @@ type Soil struct {
 	BabyID    string
 	CreatedAt time.Time
 	Note      string
-	Wet       int64
-	Soil      int64
+	Wet       string
+	Soil      string
 }

@@ -18,7 +18,7 @@ CREATE TABLE soils(
     baby_id TEXT NOT NULL,
     created_at TIMESTAMP NOT NULL,
     note TEXT NOT NULL,
-    wet INTEGER NOT NULL,
-    soil INTEGER NOT NULL,
+    wet TEXT NOT NULL,
+    soil TEXT NOT NULL,
     FOREIGN KEY (baby_id) REFERENCES babies(id) ON DELETE CASCADE
 );

@@ -49,6 +49,13 @@ var (
 
 	// To be assigned at server initialization
 	queries *totdb.Queries
+
+	SoilMap = map[string]string{
+		"0": "None",
+		"1": "Light",
+		"2": "Medium",
+		"3": "Heavy",
+	}
 )
 
 type TallyPageData struct {
@@ -59,15 +66,15 @@ type TallyPageData struct {
 
 type Feed struct {
 	Time   string
-	Ounces string
 	Note   string
+	Ounces string
 }
 
 type Soil struct {
 	Time string
+	Note string
 	Wet  string
 	Soil string
-	Note string
 }
 
 func main() {
@@ -137,24 +144,44 @@ func rootHandler(w http.ResponseWriter, req *http.Request) error {
 				return err
 			}
 
+			// Get and format list of Feeds
 			log.Printf("ListFeeds baby_id=%s\n", baby_id)
 			listFeeds, err := queries.ListFeeds(ctx, baby_id)
 			if err != nil {
 				return err
 			}
 
-			formatted_feeds := make([]Feed, len(listFeeds))
+			formattedFeeds := make([]Feed, len(listFeeds))
 			for i, feed := range listFeeds {
-				formatted_time := feed.CreatedAt.In(tzLocation).Format("2006-01-02 03:04 PM")
+				formattedTime := feed.CreatedAt.In(tzLocation).Format("2006-01-02 03:04 PM")
 				ounces_str := strconv.FormatInt(feed.Ounces, 10)
-				formatted_feeds[i] = Feed{formatted_time, ounces_str, feed.Note}
+				formattedFeeds[i] = Feed{formattedTime, feed.Note, ounces_str}
 			}
 
-			data := TallyPageData{Name: getBaby.Name, Feeds: formatted_feeds}
+			// Get and format list of Soils
+			log.Printf("ListSoils baby_id=%s\n", baby_id)
+			listSoils, err := queries.ListSoils(ctx, baby_id)
+			if err != nil {
+				return err
+			}
+
+			formattedSoils := make([]Soil, len(listSoils))
+			for i, soil := range listSoils {
+				formattedTime := soil.CreatedAt.In(tzLocation).Format("2006-01-02 03:04 PM")
+				formattedSoils[i] = Soil{formattedTime, soil.Note, soil.Wet, soil.Soil}
+			}
+
+			data := TallyPageData{Name: getBaby.Name, Feeds: formattedFeeds, Soils: formattedSoils}
 			templateTally := template.Must(template.ParseFiles("assets/tally.html"))
 			templateTally.Execute(w, data)
 		}
 	case http.MethodPost:
+		// POST means we're creating a new item, so generate its ID
+		new_id, err := generateId()
+		if err != nil {
+			return err
+		}
+
 		if baby_id == "" {
 			// Create new baby
 			name := req.FormValue("name")
@@ -164,13 +191,8 @@ func rootHandler(w http.ResponseWriter, req *http.Request) error {
 				return errors.New("name cannot be empty")
 			}
 
-			new_baby_id, err := generateId()
-			if err != nil {
-				return err
-			}
-
-			log.Printf("CreateBaby id=%s, name=%s timezone=%s\n", new_baby_id, name, timezone)
-			newBaby, err := queries.CreateBaby(ctx, totdb.CreateBabyParams{ID: new_baby_id, Name: name, Timezone: timezone})
+			log.Printf("CreateBaby id=%s, name=%s timezone=%s\n", new_id, name, timezone)
+			newBaby, err := queries.CreateBaby(ctx, totdb.CreateBabyParams{ID: new_id, Name: name, Timezone: timezone})
 			if err != nil {
 				return err
 			}
@@ -178,27 +200,38 @@ func rootHandler(w http.ResponseWriter, req *http.Request) error {
 			new_url := "/" + newBaby.ID
 			http.Redirect(w, req, new_url, http.StatusSeeOther)
 		} else {
-			// Create new feed/soil tally
-			note := req.FormValue("note")
-			ounces := req.FormValue("ounces")
-			ounces_str, err := strconv.ParseInt(ounces, 10, 64)
-			if err != nil {
-				panic(err)
-			}
+			if req.FormValue("ounces") != "" {
+				// Create new feed
+				note := req.FormValue("note")
+				ounces := req.FormValue("ounces")
+				ounces_str, err := strconv.ParseInt(ounces, 10, 64)
+				if err != nil {
+					panic(err)
+				}
 
-			new_id, err := generateId()
-			if err != nil {
-				return err
-			}
+				log.Printf("CreateFeed id=%s, baby_id=%s, note=%s, ounces=%s", new_id, baby_id, note, ounces)
+				_, err = queries.CreateFeed(ctx, totdb.CreateFeedParams{new_id, baby_id, time.Now().UTC(), note, ounces_str})
+				if err != nil {
+					return err
+				}
 
-			log.Printf("CreateFeed id=%s, baby_id=%s, note=%s, ounces=%s", new_id, baby_id, note, ounces)
-			_, err = queries.CreateFeed(ctx, totdb.CreateFeedParams{new_id, baby_id, time.Now().UTC(), note, ounces_str})
-			if err != nil {
-				return err
-			}
+				new_url := "/" + baby_id
+				http.Redirect(w, req, new_url, http.StatusSeeOther)
+			} else if req.FormValue("soil") != "" {
+				// Create new soil
+				note := req.FormValue("note")
+				wet := req.FormValue("wet")
+				soil := req.FormValue("soil")
 
-			new_url := "/" + baby_id
-			http.Redirect(w, req, new_url, http.StatusSeeOther)
+				log.Printf("CreateSoil id=%s, baby_id=%s, note=%s, wet=%s, soil=%s", new_id, baby_id, note, wet, soil)
+				_, err = queries.CreateSoil(ctx, totdb.CreateSoilParams{ID: new_id, BabyID: baby_id, CreatedAt: time.Now().UTC(), Note: note, Wet: SoilMap[wet], Soil: SoilMap[soil]})
+				if err != nil {
+					return err
+				}
+
+				new_url := "/" + baby_id
+				http.Redirect(w, req, new_url, http.StatusSeeOther)
+			}
 		}
 	}
 

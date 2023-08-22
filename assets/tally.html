@@ -58,7 +58,9 @@
     </table>
   </details>
 
-  <details>
+  <br />
+
+  <details open>
     <summary>Soils</summary>
     <form method="POST">
       <label for="wet">Wet</label>
@@ -105,5 +107,22 @@
       />
       <input type="submit" value="Record Soil" />
     </form>
+
+    <table>
+      <tr>
+        <th>Time</th>
+        <th>Wet</th>
+        <th>Soil</th>
+        <th>Note</th>
+      </tr>
+      {{range .Soils}}
+      <tr>
+        <td>{{.Time}}</td>
+        <td>{{.Wet}}</td>
+        <td>{{.Soil}}</td>
+        <td>{{.Note}}</td>
+      </tr>
+      {{end}}
+    </table>
   </details>
 </html>
