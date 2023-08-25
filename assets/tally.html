@@ -1,128 +1,173 @@
+<!DOCTYPE html>
 <html>
-  <link rel="stylesheet" href="static/style.css" />
-  <title>Tot Tally</title>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tot Tally - {{.Name}}</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css"
+    />
+  </head>
 
-  <h1>Tot Tally</h1>
-  <h2>{{.Name}}</h2>
+  <body>
+    <div class="container is-fluid">
+      <div class="columns is-centered is-vcentered is-mobile has-text-centered">
+        <section class="hero">
+          <div class="hero-body">
+            <h1 class="title">Tot Tally</h1>
+            <h2 class="subtitle">{{.Name}}</h2>
+          </div>
+        </section>
+      </div>
 
-  <details open>
-    <summary>Feeds</summary>
+      <div class="columns has-text-centered">
+        <div class="column">
+          <div class="content">
+            <h2>Feeds</h2>
+          </div>
 
-    <form method="POST">
-      <label for="ounces">Ounces</label>
-      <input
-        type="range"
-        id="ounces"
-        name="ounces"
-        list="ounces-values"
-        min="0"
-        max="9"
-        value="0"
-        step="1"
-      />
-      <datalist id="ounces-values">
-        <option value="0" label="0">0</option>
-        <option value="1" label="1">1</option>
-        <option value="2" label="2">2</option>
-        <option value="3" label="3">3</option>
-        <option value="4" label="4">4</option>
-        <option value="5" label="5">5</option>
-        <option value="6" label="6">6</option>
-        <option value="7" label="7">7</option>
-        <option value="8" label="8">8</option>
-        <option value="9" label="9">9</option>
-      </datalist>
+          <form method="POST" class="box">
+            <div class="columns">
+              <div class="column">
+                <div class="field">
+                  <label class="label">Ounces</label>
+                  <div class="control">
+                    <div class="select">
+                      <select id="ounces" name="ounces">
+                        <option value="0" label="0">0</option>
+                        <option value="1" label="1">1</option>
+                        <option value="2" label="2">2</option>
+                        <option value="3" label="3">3</option>
+                        <option value="4" label="4">4</option>
+                        <option value="5" label="5">5</option>
+                        <option value="6" label="6">6</option>
+                        <option value="7" label="7">7</option>
+                        <option value="8" label="8">8</option>
+                        <option value="9" label="9">9</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-      <input
-        type="text"
-        name="note"
-        placeholder="Note (Optional)"
-        maxlength="60"
-      />
-      <input type="submit" value="Record Feeding" />
-    </form>
+            <div class="field">
+              <label class="label">Note (Optional)</label>
+              <div class="control">
+                <input
+                  type="text"
+                  name="note"
+                  placeholder="Note (Optional)"
+                  maxlength="60"
+                  class="input control"
+                />
+              </div>
+            </div>
 
-    <table>
-      <tr>
-        <th>Time</th>
-        <th>Ounces</th>
-        <th>Note</th>
-      </tr>
-      {{range .Feeds}}
-      <tr>
-        <td>{{.Time}}</td>
-        <td>{{.Ounces}}</td>
-        <td>{{.Note}}</td>
-      </tr>
-      {{end}}
-    </table>
-  </details>
+            <div class="control">
+              <button type="submit" class="button is-primary">
+                Record Feeding
+              </button>
+            </div>
+          </form>
 
-  <br />
+          <table
+            class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth"
+          >
+            <tr>
+              <th>Time</th>
+              <th>Ounces</th>
+              <th>Note</th>
+            </tr>
+            {{range .Feeds}}
+            <tr>
+              <td>{{.Time}}</td>
+              <td>{{.Ounces}}</td>
+              <td>{{.Note}}</td>
+            </tr>
+            {{end}}
+          </table>
+        </div>
 
-  <details open>
-    <summary>Soils</summary>
-    <form method="POST">
-      <label for="wet">Wet</label>
-      <input
-        type="range"
-        id="wet"
-        name="wet"
-        list="wet-values"
-        min="0"
-        max="3"
-        value="0"
-        step="1"
-      />
-      <datalist id="wet-values">
-        <option value="None" label="None">None</option>
-        <option value="Light" label="Light">Light</option>
-        <option value="Medium" label="Medium">Medium</option>
-        <option value="Heavy" label="Heavy">Heavy</option>
-      </datalist>
+        <div class="column">
+          <div class="content">
+            <h2>Soils</h2>
+          </div>
 
-      <label for="soil">Soil</label>
-      <input
-        type="range"
-        id="soil"
-        name="soil"
-        list="soil-values"
-        min="0"
-        max="3"
-        value="0"
-        step="1"
-      />
-      <datalist id="soil-values">
-        <option value="None" label="None">None</option>
-        <option value="Light" label="Light">Light</option>
-        <option value="Medium" label="Medium">Medium</option>
-        <option value="Heavy" label="Heavy">Heavy</option>
-      </datalist>
+          <form method="POST" class="box">
+            <div class="columns is-gapless">
+              <div class="column">
+                <div class="field">
+                  <label for="wet" class="label">Wet</label>
+                  <div class="control">
+                    <div class="select">
+                      <select id="wet" name="wet">
+                        <option value="None">None</option>
+                        <option value="Light">Light</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Heavy">Heavy</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-      <input
-        type="text"
-        name="note"
-        placeholder="Note (Optional)"
-        maxlength="60"
-      />
-      <input type="submit" value="Record Soil" />
-    </form>
+              <div class="column">
+                <div class="field">
+                  <label for="soil" class="label">Soil</label>
+                  <div class="control">
+                    <div class="select">
+                      <select id="soil" name="soil">
+                        <option value="None">None</option>
+                        <option value="Light">Light</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Heavy">Heavy</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-    <table>
-      <tr>
-        <th>Time</th>
-        <th>Wet</th>
-        <th>Soil</th>
-        <th>Note</th>
-      </tr>
-      {{range .Soils}}
-      <tr>
-        <td>{{.Time}}</td>
-        <td>{{.Wet}}</td>
-        <td>{{.Soil}}</td>
-        <td>{{.Note}}</td>
-      </tr>
-      {{end}}
-    </table>
-  </details>
+            <div class="field">
+              <label class="label">Note (Optional)</label>
+              <input
+                type="text"
+                name="note"
+                placeholder="Note (Optional)"
+                maxlength="60"
+                class="input control"
+              />
+            </div>
+
+            <div class="control">
+              <button type="submit" class="button is-primary">
+                Record Soil
+              </button>
+            </div>
+          </form>
+
+          <table
+            class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth"
+          >
+            <tr>
+              <th>Time</th>
+              <th>Wet</th>
+              <th>Soil</th>
+              <th>Note</th>
+            </tr>
+            {{range .Soils}}
+            <tr>
+              <td>{{.Time}}</td>
+              <td>{{.Wet}}</td>
+              <td>{{.Soil}}</td>
+              <td>{{.Note}}</td>
+            </tr>
+            {{end}}
+          </table>
+        </div>
+      </div>
+    </div>
+  </body>
 </html>

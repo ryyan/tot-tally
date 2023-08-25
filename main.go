@@ -42,13 +42,6 @@ var (
 
 	// To be assigned at server initialization
 	queries *totdb.Queries
-
-	SoilMap = map[string]string{
-		"0": "None",
-		"1": "Light",
-		"2": "Medium",
-		"3": "Heavy",
-	}
 )
 
 type TallyPageData struct {
@@ -170,6 +163,8 @@ func rootHandler(w http.ResponseWriter, req *http.Request) error {
 				if err != nil {
 					return err
 				}
+			} else {
+				return errors.New("invalid POST")
 			}
 		}
 
@@ -214,6 +209,7 @@ func getTallyPageData(baby_id string) (TallyPageData, error) {
 	if err != nil {
 		return TallyPageData{}, err
 	}
+	log.Printf("%s\n", listSoils)
 
 	formattedSoils := make([]Soil, len(listSoils))
 	for i, soil := range listSoils {
@@ -248,7 +244,7 @@ func createSoil(req *http.Request, new_id string, baby_id string) error {
 	soil := req.FormValue("soil")
 
 	log.Printf("CreateSoil id=%s, baby_id=%s, note=%s, wet=%s, soil=%s", new_id, baby_id, note, wet, soil)
-	_, err := queries.CreateSoil(ctx, totdb.CreateSoilParams{ID: new_id, BabyID: baby_id, CreatedAt: time.Now().UTC(), Note: note, Wet: SoilMap[wet], Soil: SoilMap[soil]})
+	_, err := queries.CreateSoil(ctx, totdb.CreateSoilParams{ID: new_id, BabyID: baby_id, CreatedAt: time.Now().UTC(), Note: note, Wet: wet, Soil: soil})
 	if err != nil {
 		return err
 	}
