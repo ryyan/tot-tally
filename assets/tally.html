@@ -26,6 +26,7 @@
           <form method="POST" class="box">
             <div class="content">
               <h2>Feeds</h2>
+              <p>Last feed: {{.TimeSinceLastFeed}}</p>
             </div>
 
             <div class="columns">
@@ -70,30 +71,33 @@
                 Record Feeding
               </button>
             </div>
-          </form>
 
-          <table
-            class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth"
-          >
-            <tr>
-              <th>Time</th>
-              <th>Ounces</th>
-              <th>Note</th>
-            </tr>
-            {{range .Feeds}}
-            <tr>
-              <td>{{.Time}}</td>
-              <td>{{.Ounces}}</td>
-              <td>{{.Note}}</td>
-            </tr>
-            {{end}}
-          </table>
+            <br />
+
+            <table
+              class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth"
+            >
+              <tr>
+                <th>Time (Feeds)</th>
+                <th>Ounces</th>
+                <th>Note</th>
+              </tr>
+              {{range .Feeds}}
+              <tr>
+                <td>{{.Time}}</td>
+                <td>{{.Ounces}}</td>
+                <td>{{.Note}}</td>
+              </tr>
+              {{end}}
+            </table>
+          </form>
         </div>
 
         <div class="column">
           <form method="POST" class="box">
             <div class="content">
               <h2>Soils</h2>
+              <p>Last soil: {{.TimeSinceLastSoil}}</p>
             </div>
 
             <div class="columns is-gapless">
@@ -146,26 +150,27 @@
                 Record Soil
               </button>
             </div>
-          </form>
+            <br />
 
-          <table
-            class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth"
-          >
-            <tr>
-              <th>Time</th>
-              <th>Wet</th>
-              <th>Soil</th>
-              <th>Note</th>
-            </tr>
-            {{range .Soils}}
-            <tr>
-              <td>{{.Time}}</td>
-              <td>{{.Wet}}</td>
-              <td>{{.Soil}}</td>
-              <td>{{.Note}}</td>
-            </tr>
-            {{end}}
-          </table>
+            <table
+              class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth"
+            >
+              <tr>
+                <th>Time (Soils)</th>
+                <th>Wet</th>
+                <th>Soil</th>
+                <th>Note</th>
+              </tr>
+              {{range .Soils}}
+              <tr>
+                <td>{{.Time}}</td>
+                <td>{{.Wet}}</td>
+                <td>{{.Soil}}</td>
+                <td>{{.Note}}</td>
+              </tr>
+              {{end}}
+            </table>
+          </form>
         </div>
       </div>
 
