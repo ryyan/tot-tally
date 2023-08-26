@@ -45,9 +45,10 @@ var (
 )
 
 type TallyPageData struct {
-	Name  string
-	Feeds []Feed
-	Soils []Soil
+	Name     string
+	Timezone string
+	Feeds    []Feed
+	Soils    []Soil
 }
 
 type Feed struct {
@@ -163,8 +164,12 @@ func rootHandler(w http.ResponseWriter, req *http.Request) error {
 				if err != nil {
 					return err
 				}
-			} else {
-				return errors.New("invalid POST")
+			} else if req.FormValue("timezone") != "" {
+				// Update timezone
+				err := updateTimezone(req, baby_id)
+				if err != nil {
+					return err
+				}
 			}
 		}
 
@@ -217,7 +222,7 @@ func getTallyPageData(baby_id string) (TallyPageData, error) {
 		formattedSoils[i] = Soil{formattedTime, soil.Note, soil.Wet, soil.Soil}
 	}
 
-	data := TallyPageData{Name: getBaby.Name, Feeds: formattedFeeds, Soils: formattedSoils}
+	data := TallyPageData{Name: getBaby.Name, Timezone: getBaby.Timezone, Feeds: formattedFeeds, Soils: formattedSoils}
 	return data, nil
 }
 
@@ -245,6 +250,18 @@ func createSoil(req *http.Request, new_id string, baby_id string) error {
 
 	log.Printf("CreateSoil id=%s, baby_id=%s, note=%s, wet=%s, soil=%s", new_id, baby_id, note, wet, soil)
 	_, err := queries.CreateSoil(ctx, totdb.CreateSoilParams{ID: new_id, BabyID: baby_id, CreatedAt: time.Now().UTC(), Note: note, Wet: wet, Soil: soil})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func updateTimezone(req *http.Request, baby_id string) error {
+	timezone := req.FormValue("timezone")
+
+	log.Printf("UpdateTimezone id=%s, timezone=%s", baby_id, timezone)
+	_, err := queries.UpdateTimezone(ctx, totdb.UpdateTimezoneParams{ID: baby_id, Timezone: timezone})
 	if err != nil {
 		return err
 	}
