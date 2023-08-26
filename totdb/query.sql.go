@@ -30,13 +30,12 @@ func (q *Queries) CreateBaby(ctx context.Context, arg CreateBabyParams) (Baby, e
 }
 
 const createFeed = `-- name: CreateFeed :one
-INSERT INTO feeds (id, baby_id, created_at, note, ounces)
-VALUES (?, ?, ?, ?, ?)
+INSERT INTO feeds (baby_id, created_at, note, ounces)
+VALUES (?, ?, ?, ?)
 RETURNING id, baby_id, created_at, note, ounces
 `
 
 type CreateFeedParams struct {
-	ID        string
 	BabyID    string
 	CreatedAt time.Time
 	Note      string
@@ -45,7 +44,6 @@ type CreateFeedParams struct {
 
 func (q *Queries) CreateFeed(ctx context.Context, arg CreateFeedParams) (Feed, error) {
 	row := q.db.QueryRowContext(ctx, createFeed,
-		arg.ID,
 		arg.BabyID,
 		arg.CreatedAt,
 		arg.Note,
@@ -63,13 +61,12 @@ func (q *Queries) CreateFeed(ctx context.Context, arg CreateFeedParams) (Feed, e
 }
 
 const createSoil = `-- name: CreateSoil :one
-INSERT INTO soils (id, baby_id, created_at, note, wet, soil)
-VALUES (?, ?, ?, ?, ?, ?)
+INSERT INTO soils (baby_id, created_at, note, wet, soil)
+VALUES (?, ?, ?, ?, ?)
 RETURNING id, baby_id, created_at, note, wet, soil
 `
 
 type CreateSoilParams struct {
-	ID        string
 	BabyID    string
 	CreatedAt time.Time
 	Note      string
@@ -79,7 +76,6 @@ type CreateSoilParams struct {
 
 func (q *Queries) CreateSoil(ctx context.Context, arg CreateSoilParams) (Soil, error) {
 	row := q.db.QueryRowContext(ctx, createSoil,
-		arg.ID,
 		arg.BabyID,
 		arg.CreatedAt,
 		arg.Note,

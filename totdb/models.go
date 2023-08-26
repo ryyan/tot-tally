@@ -15,7 +15,7 @@ type Baby struct {
 }
 
 type Feed struct {
-	ID        string
+	ID        int64
 	BabyID    string
 	CreatedAt time.Time
 	Note      string
@@ -23,7 +23,7 @@ type Feed struct {
 }
 
 type Soil struct {
-	ID        string
+	ID        int64
 	BabyID    string
 	CreatedAt time.Time
 	Note      string

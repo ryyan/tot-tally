@@ -1,11 +1,11 @@
 CREATE TABLE babies (
-    id TEXT PRIMARY KEY NOT NULL,
+    id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
     timezone TEXT NOT NULL
 );
 
 CREATE TABLE feeds (
-    id TEXT PRIMARY KEY NOT NULL,
+    id INTEGER PRIMARY KEY,
     baby_id TEXT NOT NULL,
     created_at TIMESTAMP NOT NULL,
     note TEXT NOT NULL,
@@ -14,7 +14,7 @@ CREATE TABLE feeds (
 );
 
 CREATE TABLE soils(
-    id TEXT PRIMARY KEY NOT NULL,
+    id INTEGER PRIMARY KEY,
     baby_id TEXT NOT NULL,
     created_at TIMESTAMP NOT NULL,
     note TEXT NOT NULL,

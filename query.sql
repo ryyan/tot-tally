@@ -16,8 +16,8 @@ WHERE id = ?
 RETURNING *;
 
 -- name: CreateFeed :one
-INSERT INTO feeds (id, baby_id, created_at, note, ounces)
-VALUES (?, ?, ?, ?, ?)
+INSERT INTO feeds (baby_id, created_at, note, ounces)
+VALUES (?, ?, ?, ?)
 RETURNING *;
 
 -- name: ListFeeds :many
@@ -28,8 +28,8 @@ ORDER BY created_at DESC
 LIMIT 10;
 
 -- name: CreateSoil :one
-INSERT INTO soils (id, baby_id, created_at, note, wet, soil)
-VALUES (?, ?, ?, ?, ?, ?)
+INSERT INTO soils (baby_id, created_at, note, wet, soil)
+VALUES (?, ?, ?, ?, ?)
 RETURNING *;
 
 -- name: ListSoils :many

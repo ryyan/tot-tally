@@ -132,12 +132,6 @@ func rootHandler(w http.ResponseWriter, req *http.Request) error {
 			templateTally.Execute(w, data)
 		}
 	case http.MethodPost:
-		// POST means we're creating a new item, so generate its ID
-		new_id, err := generateId()
-		if err != nil {
-			return err
-		}
-
 		if baby_id == "" {
 			// Create new baby
 			name := req.FormValue("name")
@@ -145,6 +139,11 @@ func rootHandler(w http.ResponseWriter, req *http.Request) error {
 
 			if strings.TrimSpace(name) == "" {
 				return errors.New("name cannot be empty")
+			}
+
+			new_id, err := generateId()
+			if err != nil {
+				return err
 			}
 
 			log.Printf("CreateBaby id=%s, name=%s timezone=%s\n", new_id, name, timezone)
@@ -157,13 +156,13 @@ func rootHandler(w http.ResponseWriter, req *http.Request) error {
 		} else {
 			if req.FormValue("ounces") != "" {
 				// Create new feed
-				err := createFeed(req, new_id, baby_id)
+				err := createFeed(req, baby_id)
 				if err != nil {
 					return err
 				}
 			} else if req.FormValue("soil") != "" {
 				// Create new soil
-				err := createSoil(req, new_id, baby_id)
+				err := createSoil(req, baby_id)
 				if err != nil {
 					return err
 				}
@@ -238,7 +237,7 @@ func getTallyPageData(baby_id string) (TallyPageData, error) {
 	return data, nil
 }
 
-func createFeed(req *http.Request, new_id string, baby_id string) error {
+func createFeed(req *http.Request, baby_id string) error {
 	note := req.FormValue("note")
 	ounces := req.FormValue("ounces")
 	ounces_str, err := strconv.ParseInt(ounces, 10, 64)
@@ -246,8 +245,8 @@ func createFeed(req *http.Request, new_id string, baby_id string) error {
 		return err
 	}
 
-	log.Printf("CreateFeed id=%s, baby_id=%s, note=%s, ounces=%s", new_id, baby_id, note, ounces)
-	_, err = queries.CreateFeed(ctx, totdb.CreateFeedParams{new_id, baby_id, time.Now().UTC(), note, ounces_str})
+	log.Printf("CreateFeed baby_id=%s, note=%s, ounces=%s", baby_id, note, ounces)
+	_, err = queries.CreateFeed(ctx, totdb.CreateFeedParams{BabyID: baby_id, CreatedAt: time.Now().UTC(), Note: note, Ounces: ounces_str})
 	if err != nil {
 		return err
 	}
@@ -255,13 +254,13 @@ func createFeed(req *http.Request, new_id string, baby_id string) error {
 	return nil
 }
 
-func createSoil(req *http.Request, new_id string, baby_id string) error {
+func createSoil(req *http.Request, baby_id string) error {
 	note := req.FormValue("note")
 	wet := req.FormValue("wet")
 	soil := req.FormValue("soil")
 
-	log.Printf("CreateSoil id=%s, baby_id=%s, note=%s, wet=%s, soil=%s", new_id, baby_id, note, wet, soil)
-	_, err := queries.CreateSoil(ctx, totdb.CreateSoilParams{ID: new_id, BabyID: baby_id, CreatedAt: time.Now().UTC(), Note: note, Wet: wet, Soil: soil})
+	log.Printf("CreateSoil baby_id=%s, note=%s, wet=%s, soil=%s", baby_id, note, wet, soil)
+	_, err := queries.CreateSoil(ctx, totdb.CreateSoilParams{BabyID: baby_id, CreatedAt: time.Now().UTC(), Note: note, Wet: wet, Soil: soil})
 	if err != nil {
 		return err
 	}
