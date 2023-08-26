@@ -117,7 +117,7 @@ SELECT id, baby_id, created_at, note, ounces
 FROM feeds
 WHERE baby_id = ?
 ORDER BY created_at DESC
-LIMIT 20
+LIMIT 10
 `
 
 func (q *Queries) ListFeeds(ctx context.Context, babyID string) ([]Feed, error) {
@@ -154,7 +154,7 @@ SELECT id, baby_id, created_at, note, wet, soil
 FROM soils
 WHERE baby_id = ?
 ORDER BY created_at DESC
-LIMIT 20
+LIMIT 10
 `
 
 func (q *Queries) ListSoils(ctx context.Context, babyID string) ([]Soil, error) {
