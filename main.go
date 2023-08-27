@@ -212,7 +212,7 @@ func getTallyPageData(baby_id string) (TallyPageData, error) {
 
 	timeSinceLastFeed := "N/A"
 	if len(listFeeds) > 0 {
-		timeSinceLastFeed = timeElapsed(time.Now().UTC(), listFeeds[0].CreatedAt, false)
+		timeSinceLastFeed = timeElapsed(time.Now().In(tzLocation), listFeeds[0].CreatedAt.In(tzLocation), false)
 	}
 
 	// Get and format list of Soils
@@ -224,7 +224,7 @@ func getTallyPageData(baby_id string) (TallyPageData, error) {
 
 	timeSinceLastSoil := "N/A"
 	if len(listSoils) > 0 {
-		timeSinceLastSoil = timeElapsed(time.Now().UTC(), listSoils[0].CreatedAt, false)
+		timeSinceLastSoil = timeElapsed(time.Now().In(tzLocation), listSoils[0].CreatedAt.In(tzLocation), false)
 	}
 
 	formattedSoils := make([]Soil, len(listSoils))
