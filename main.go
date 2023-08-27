@@ -8,7 +8,6 @@ import (
 	"errors"
 	"html/template"
 	"log"
-	"math"
 	"net/http"
 	"strconv"
 	"strings"
@@ -19,6 +18,7 @@ import (
 	_ "embed"
 
 	_ "github.com/mattn/go-sqlite3"
+	elapsed "github.com/rvflash/elapsed"
 )
 
 const (
@@ -210,11 +210,6 @@ func getTallyPageData(baby_id string) (TallyPageData, error) {
 		formattedFeeds[i] = Feed{formattedTime, feed.Note, ounces_str}
 	}
 
-	timeSinceLastFeed := "N/A"
-	if len(listFeeds) > 0 {
-		timeSinceLastFeed = timeElapsed(time.Now().In(tzLocation), listFeeds[0].CreatedAt.In(tzLocation), false)
-	}
-
 	// Get and format list of Soils
 	log.Printf("ListSoils baby_id=%s\n", baby_id)
 	listSoils, err := queries.ListSoils(ctx, baby_id)
@@ -222,16 +217,15 @@ func getTallyPageData(baby_id string) (TallyPageData, error) {
 		return TallyPageData{}, err
 	}
 
-	timeSinceLastSoil := "N/A"
-	if len(listSoils) > 0 {
-		timeSinceLastSoil = timeElapsed(time.Now().In(tzLocation), listSoils[0].CreatedAt.In(tzLocation), false)
-	}
-
 	formattedSoils := make([]Soil, len(listSoils))
 	for i, soil := range listSoils {
 		formattedTime := soil.CreatedAt.In(tzLocation).Format("2006-01-02 03:04 PM")
 		formattedSoils[i] = Soil{formattedTime, soil.Note, soil.Wet, soil.Soil}
 	}
+
+	// Generate human-readable "time since last X"
+	timeSinceLastFeed := elapsed.Time(listFeeds[0].CreatedAt.In(tzLocation))
+	timeSinceLastSoil := elapsed.Time(listSoils[0].CreatedAt.In(tzLocation))
 
 	data := TallyPageData{Name: getBaby.Name, Timezone: getBaby.Timezone, Feeds: formattedFeeds, Soils: formattedSoils, TimeSinceLastFeed: timeSinceLastFeed, TimeSinceLastSoil: timeSinceLastSoil}
 	return data, nil
@@ -296,75 +290,4 @@ func check(err error) {
 	if err != nil {
 		log.Fatal(err)
 	}
-}
-
-func s(x float64) string {
-	if int(x) == 1 {
-		return ""
-	}
-	return "s"
-}
-
-// https://socketloop.com/tutorials/golang-human-readable-time-elapsed-format-such-as-5-days-ago
-func timeElapsed(now time.Time, then time.Time, full bool) string {
-	var parts []string
-	var text string
-
-	year2, month2, day2 := now.Date()
-	hour2, minute2, second2 := now.Clock()
-
-	year1, month1, day1 := then.Date()
-	hour1, minute1, second1 := then.Clock()
-
-	year := math.Abs(float64(int(year2 - year1)))
-	month := math.Abs(float64(int(month2 - month1)))
-	day := math.Abs(float64(int(day2 - day1)))
-	hour := math.Abs(float64(int(hour2 - hour1)))
-	minute := math.Abs(float64(int(minute2 - minute1)))
-	second := math.Abs(float64(int(second2 - second1)))
-
-	week := math.Floor(day / 7)
-
-	if year > 0 {
-		parts = append(parts, strconv.Itoa(int(year))+" year"+s(year))
-	}
-
-	if month > 0 {
-		parts = append(parts, strconv.Itoa(int(month))+" month"+s(month))
-	}
-
-	if week > 0 {
-		parts = append(parts, strconv.Itoa(int(week))+" week"+s(week))
-	}
-
-	if day > 0 {
-		parts = append(parts, strconv.Itoa(int(day))+" day"+s(day))
-	}
-
-	if hour > 0 {
-		parts = append(parts, strconv.Itoa(int(hour))+" hour"+s(hour))
-	}
-
-	if minute > 0 {
-		parts = append(parts, strconv.Itoa(int(minute))+" minute"+s(minute))
-	}
-
-	if second > 0 {
-		parts = append(parts, strconv.Itoa(int(second))+" second"+s(second))
-	}
-
-	if now.After(then) {
-		text = " ago"
-	} else {
-		text = " after"
-	}
-
-	if len(parts) == 0 {
-		return "just now"
-	}
-
-	if full {
-		return strings.Join(parts, ", ") + text
-	}
-	return parts[0] + text
 }
