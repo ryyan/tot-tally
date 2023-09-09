@@ -26,10 +26,29 @@
           <form method="POST" class="box">
             <div class="content">
               <h2>Feeds</h2>
-              <p>Last feed: {{.TimeSinceLastFeed}}</p>
+              <span>Last milk: {{.TimeSinceLastMilk}}</span>
+              <br />
+              <span>Last food: {{.TimeSinceLastFood}}</span>
             </div>
 
             <div class="columns">
+              <div class="column">
+                <div class="field">
+                  <label class="label">Type</label>
+                  <div class="control">
+                    <label class="radio">
+                      <input type="radio" name="feedType" value="0" checked />
+                      Milk
+                    </label>
+                    <br />
+                    <label class="radio">
+                      <input type="radio" name="feedType" value="1" />
+                      Food
+                    </label>
+                  </div>
+                </div>
+              </div>
+
               <div class="column">
                 <div class="field">
                   <label class="label">Ounces</label>
@@ -53,19 +72,6 @@
               </div>
             </div>
 
-            <div class="field">
-              <label class="label">Note (Optional)</label>
-              <div class="control">
-                <input
-                  type="text"
-                  name="note"
-                  placeholder="Note (Optional)"
-                  maxlength="60"
-                  class="input control"
-                />
-              </div>
-            </div>
-
             <div class="control">
               <button type="submit" class="button is-primary">
                 Record Feeding
@@ -78,15 +84,15 @@
               class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth"
             >
               <tr>
-                <th>Time (Feeds)</th>
+                <th>Time</th>
+                <th>Type</th>
                 <th>Ounces</th>
-                <th>Note</th>
               </tr>
               {{range .Feeds}}
               <tr>
                 <td>{{.Time}}</td>
+                <td>{{.FeedType}}</td>
                 <td>{{.Ounces}}</td>
-                <td>{{.Note}}</td>
               </tr>
               {{end}}
             </table>
@@ -97,7 +103,9 @@
           <form method="POST" class="box">
             <div class="content">
               <h2>Soils</h2>
-              <p>Last soil: {{.TimeSinceLastSoil}}</p>
+              <span>Last wet: {{.TimeSinceLastWet}}</span>
+              <br />
+              <span>Last soil: {{.TimeSinceLastSoil}}</span>
             </div>
 
             <div class="columns is-gapless">
@@ -105,14 +113,15 @@
                 <div class="field">
                   <label for="wet" class="label">Wet</label>
                   <div class="control">
-                    <div class="select">
-                      <select id="wet" name="wet">
-                        <option value="None">None</option>
-                        <option value="Light">Light</option>
-                        <option value="Medium">Medium</option>
-                        <option value="Heavy">Heavy</option>
-                      </select>
-                    </div>
+                    <label class="radio">
+                      <input type="radio" name="wet" value="0" checked />
+                      No
+                    </label>
+                    <br />
+                    <label class="radio">
+                      <input type="radio" name="wet" value="1" />
+                      Yes
+                    </label>
                   </div>
                 </div>
               </div>
@@ -121,28 +130,18 @@
                 <div class="field">
                   <label for="soil" class="label">Soil</label>
                   <div class="control">
-                    <div class="select">
-                      <select id="soil" name="soil">
-                        <option value="None">None</option>
-                        <option value="Light">Light</option>
-                        <option value="Medium">Medium</option>
-                        <option value="Heavy">Heavy</option>
-                      </select>
-                    </div>
+                    <label class="radio">
+                      <input type="radio" name="soil" value="0" checked />
+                      No
+                    </label>
+                    <br />
+                    <label class="radio">
+                      <input type="radio" name="soil" value="1" />
+                      Yes
+                    </label>
                   </div>
                 </div>
               </div>
-            </div>
-
-            <div class="field">
-              <label class="label">Note (Optional)</label>
-              <input
-                type="text"
-                name="note"
-                placeholder="Note (Optional)"
-                maxlength="60"
-                class="input control"
-              />
             </div>
 
             <div class="control">
@@ -156,17 +155,15 @@
               class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth"
             >
               <tr>
-                <th>Time (Soils)</th>
+                <th>Time</th>
                 <th>Wet</th>
                 <th>Soil</th>
-                <th>Note</th>
               </tr>
               {{range .Soils}}
               <tr>
                 <td>{{.Time}}</td>
                 <td>{{.Wet}}</td>
                 <td>{{.Soil}}</td>
-                <td>{{.Note}}</td>
               </tr>
               {{end}}
             </table>
@@ -226,6 +223,6 @@
       </div>
     </div>
 
-    <br /><br />
+    <br /><br /><br />
   </body>
 </html>

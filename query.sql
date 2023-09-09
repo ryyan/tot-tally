@@ -16,7 +16,7 @@ WHERE id = ?
 RETURNING *;
 
 -- name: CreateFeed :one
-INSERT INTO feeds (baby_id, created_at, note, ounces)
+INSERT INTO feeds (baby_id, created_at, ounces, feed_type)
 VALUES (?, ?, ?, ?)
 RETURNING *;
 
@@ -28,8 +28,8 @@ ORDER BY created_at DESC
 LIMIT 10;
 
 -- name: CreateSoil :one
-INSERT INTO soils (baby_id, created_at, note, wet, soil)
-VALUES (?, ?, ?, ?, ?)
+INSERT INTO soils (baby_id, created_at, wet, soil)
+VALUES (?, ?, ?, ?)
 RETURNING *;
 
 -- name: ListSoils :many
@@ -38,3 +38,31 @@ FROM soils
 WHERE baby_id = ?
 ORDER BY created_at DESC
 LIMIT 10;
+
+-- name: GetLastMilkTime :one
+SELECT created_at
+FROM feeds
+WHERE baby_id = ? AND feed_type = 0 AND ounces > 0
+ORDER BY created_at DESC
+LIMIT 1;
+
+-- name: GetLastFoodTime :one
+SELECT created_at
+FROM feeds
+WHERE baby_id = ? AND feed_type = 1 AND ounces > 0
+ORDER BY created_at DESC
+LIMIT 1;
+
+-- name: GetLastWetTime :one
+SELECT created_at
+FROM soils
+WHERE baby_id = ? AND wet = 1
+ORDER BY created_at DESC
+LIMIT 1;
+
+-- name: GetLastSoilTime :one
+SELECT created_at
+FROM soils
+WHERE baby_id = ? AND soil = 1
+ORDER BY created_at DESC
+LIMIT 1;
