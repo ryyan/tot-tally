@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Tot Tally - {{.Name}}</title>
+    <title>TotTally: {{.Name}}</title>
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css"
@@ -15,7 +15,7 @@
       <div class="columns is-centered is-vcentered is-mobile has-text-centered">
         <section class="hero">
           <div class="hero-body">
-            <h1 class="title">Tot Tally</h1>
+            <h1 class="title">Tot-Tally</h1>
             <h2 class="subtitle">{{.Name}}</h2>
           </div>
         </section>
@@ -25,77 +25,60 @@
         <div class="column">
           <form method="POST" class="box">
             <div class="content">
-              <h2>Feeds</h2>
-              <span>Last milk: {{.TimeSinceLastMilk}}</span>
-              <br />
-              <span>Last food: {{.TimeSinceLastFood}}</span>
+              <h2>Milk</h2>
+              <span>Last 🍼: {{.TimeSinceLastMilk}}</span>
             </div>
 
-            <div class="columns">
-              <div class="column">
-                <div class="field">
-                  <label class="label">Type</label>
-                  <div class="control">
-                    <label class="radio">
-                      <input type="radio" name="feedType" value="0" checked />
-                      Milk
-                    </label>
-                    <br />
-                    <label class="radio">
-                      <input type="radio" name="feedType" value="1" />
-                      Food
-                    </label>
-                  </div>
-                </div>
-              </div>
-
-              <div class="column">
-                <div class="field">
-                  <label class="label">Ounces</label>
-                  <div class="control">
-                    <div class="select">
-                      <select id="ounces" name="ounces">
-                        <option value="0" label="0">0</option>
-                        <option value="1" label="1">1</option>
-                        <option value="2" label="2">2</option>
-                        <option value="3" label="3">3</option>
-                        <option value="4" label="4">4</option>
-                        <option value="5" label="5">5</option>
-                        <option value="6" label="6">6</option>
-                        <option value="7" label="7">7</option>
-                        <option value="8" label="8">8</option>
-                        <option value="9" label="9">9</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
+            <div class="field">
+              <label class="label">Ounces</label>
+              <div class="select">
+                <select id="tally" name="tally">
+                  <option value="0" label="0">0</option>
+                  <option value="1" label="1">1</option>
+                  <option value="2" label="2">2</option>
+                  <option value="3" label="3">3</option>
+                  <option value="4" label="4">4</option>
+                  <option value="5" label="5">5</option>
+                  <option value="6" label="6">6</option>
+                  <option value="7" label="7">7</option>
+                  <option value="8" label="8">8</option>
+                </select>
               </div>
             </div>
 
-            <div class="control">
+            <div class="control buttons is-centered">
               <button type="submit" class="button is-primary">
-                Record Feeding
+                Record Milk
               </button>
             </div>
+          </form>
+        </div>
 
-            <br />
+        <div class="column">
+          <form method="POST" class="box">
+            <div class="content">
+              <h2>Food</h2>
+              <span>Last 🍲: {{.TimeSinceLastFood}}</span>
+            </div>
 
-            <table
-              class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth"
-            >
-              <tr>
-                <th>Time</th>
-                <th>Type</th>
-                <th>Ounces</th>
-              </tr>
-              {{range .Feeds}}
-              <tr>
-                <td>{{.Time}}</td>
-                <td>{{.FeedType}}</td>
-                <td>{{.Ounces}}</td>
-              </tr>
-              {{end}}
-            </table>
+            <div class="control buttons is-centered">
+              <button
+                type="submit"
+                class="button is-primary"
+                name="tally"
+                value="9"
+              >
+                Record Snack
+              </button>
+              <button
+                type="submit"
+                class="button is-primary"
+                name="tally"
+                value="10"
+              >
+                Record Meal
+              </button>
+            </div>
           </form>
         </div>
 
@@ -103,123 +86,145 @@
           <form method="POST" class="box">
             <div class="content">
               <h2>Soils</h2>
-              <span>Last wet: {{.TimeSinceLastWet}}</span>
+              <span>Last 🚽: {{.TimeSinceLastWet}}</span>
               <br />
-              <span>Last soil: {{.TimeSinceLastSoil}}</span>
+              <span>Last 💩: {{.TimeSinceLastSoil}}</span>
             </div>
 
-            <div class="columns is-gapless">
-              <div class="column">
-                <div class="field">
-                  <label for="wet" class="label">Wet</label>
-                  <div class="control">
-                    <label class="radio">
-                      <input type="radio" name="wet" value="0" checked />
-                      No
-                    </label>
-                    <br />
-                    <label class="radio">
-                      <input type="radio" name="wet" value="1" />
-                      Yes
-                    </label>
-                  </div>
-                </div>
-              </div>
-
-              <div class="column">
-                <div class="field">
-                  <label for="soil" class="label">Soil</label>
-                  <div class="control">
-                    <label class="radio">
-                      <input type="radio" name="soil" value="0" checked />
-                      No
-                    </label>
-                    <br />
-                    <label class="radio">
-                      <input type="radio" name="soil" value="1" />
-                      Yes
-                    </label>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="control">
-              <button type="submit" class="button is-primary">
+            <div class="control buttons is-centered">
+              <button
+                type="submit"
+                class="button is-primary"
+                name="tally"
+                value="11"
+              >
+                Record Wet
+              </button>
+              <button
+                type="submit"
+                class="button is-primary"
+                name="tally"
+                value="12"
+              >
                 Record Soil
               </button>
+              <button
+                type="submit"
+                class="button is-primary"
+                name="tally"
+                value="13"
+              >
+                Record Both
+              </button>
             </div>
-            <br />
+          </form>
+        </div>
 
-            <table
-              class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth"
-            >
-              <tr>
-                <th>Time</th>
-                <th>Wet</th>
-                <th>Soil</th>
-              </tr>
-              {{range .Soils}}
-              <tr>
-                <td>{{.Time}}</td>
-                <td>{{.Wet}}</td>
-                <td>{{.Soil}}</td>
-              </tr>
-              {{end}}
-            </table>
+        <div class="column">
+          <form method="POST" class="box">
+            <div class="content">
+              <h2>Hygiene</h2>
+              <span>Last 🛁: {{.TimeSinceLastBath}}</span>
+              <br />
+              <span>Last 😁: {{.TimeSinceLastToothbrush}}</span>
+            </div>
+
+            <div class="control buttons is-centered">
+              <button
+                type="submit"
+                class="button is-primary"
+                name="tally"
+                value="14"
+              >
+                Record Bath
+              </button>
+              <button
+                type="submit"
+                class="button is-primary"
+                name="tally"
+                value="15"
+              >
+                Record Toothbrush
+              </button>
+            </div>
           </form>
         </div>
       </div>
 
+      <div
+        class="columns is-centered is-vcentered is-mobile has-text-centered box"
+      >
+        <div class="column">
+          <table
+            class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth"
+          >
+            <tr>
+              <th>Time</th>
+              <th>Kind</th>
+            </tr>
+            {{range .Tallies}}
+            <tr>
+              <td>{{.Time}}</td>
+              <td>{{.Kind}}</td>
+            </tr>
+            {{end}}
+          </table>
+        </div>
+      </div>
+
       <div class="columns is-centered is-vcentered is-mobile has-text-centered">
-        <form method="POST" class="box">
-          <div class="content">
-            <h2>Timezone</h2>
-            <p>Current: {{.Timezone}}</p>
-          </div>
-          <div class="field">
-            <div class="control">
-              <div class="select">
-                <select id="timezone" name="timezone">
-                  <option value=""></option>
-                  <option value="Pacific/Honolulu">
-                    Pacific/Honolulu GMT-10:00
-                  </option>
-                  <option value="America/Anchorage">
-                    America/Anchorage GMT-9:00
-                  </option>
-                  <option value="America/Los_Angeles">
-                    America/Los_Angeles GMT-8:00
-                  </option>
-                  <option value="America/Boise">America/Boise GMT-7:00</option>
-                  <option value="America/Denver">
-                    America/Denver GMT-7:00
-                  </option>
-                  <option value="America/Phoenix">
-                    America/Phoenix GMT-7:00
-                  </option>
-                  <option value="America/Chicago">
-                    America/Chicago GMT-6:00
-                  </option>
-                  <option value="America/Detroit">
-                    America/Detroit GMT-5:00
-                  </option>
-                  <option value="America/New_York">
-                    America/New_York GMT-5:00
-                  </option>
-                </select>
+        <div class="column">
+          <form method="POST" class="box">
+            <div class="content">
+              <h2>Timezone</h2>
+              <p>Current: {{.Timezone}}</p>
+            </div>
+            <div class="field">
+              <div class="control">
+                <div class="select">
+                  <select id="timezone" name="timezone">
+                    <option value=""></option>
+                    <option value="Pacific/Honolulu">
+                      Pacific/Honolulu GMT-10:00
+                    </option>
+                    <option value="America/Anchorage">
+                      America/Anchorage GMT-9:00
+                    </option>
+                    <option value="America/Los_Angeles">
+                      America/Los_Angeles GMT-8:00
+                    </option>
+                    <option value="America/Boise">
+                      America/Boise GMT-7:00
+                    </option>
+                    <option value="America/Denver">
+                      America/Denver GMT-7:00
+                    </option>
+                    <option value="America/Phoenix">
+                      America/Phoenix GMT-7:00
+                    </option>
+                    <option value="America/Chicago">
+                      America/Chicago GMT-6:00
+                    </option>
+                    <option value="America/Detroit">
+                      America/Detroit GMT-5:00
+                    </option>
+                    <option value="America/New_York">
+                      America/New_York GMT-5:00
+                    </option>
+                  </select>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div class="field is-grouped is-grouped-centered">
-            <div class="control">
-              <button type="submit" class="button is-secondary">
-                Update Timezone
-              </button>
+            <div class="field is-grouped is-grouped-centered">
+              <div class="control">
+                <button type="submit" class="button is-secondary">
+                  Update Timezone
+                </button>
+              </div>
             </div>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
 

@@ -1,68 +1,82 @@
--- name: CreateBaby :one
-INSERT INTO babies (id, name, timezone)
+-- name: CreateTot :one
+INSERT INTO tots (id, name, timezone)
 VALUES (?, ?, ?)
 RETURNING *;
 
--- name: GetBaby :one
+-- name: GetTot :one
 SELECT *
-FROM babies
+FROM tots
 WHERE id = ?
 LIMIT 1;
 
 -- name: UpdateTimezone :one
-UPDATE babies
+UPDATE tots
 SET timezone = ?
 WHERE id = ?
 RETURNING *;
 
--- name: CreateFeed :one
-INSERT INTO feeds (baby_id, created_at, ounces, feed_type)
-VALUES (?, ?, ?, ?)
+-- name: CreateTally :one
+INSERT INTO tallies (tot_id, created_at, kind)
+VALUES (?, ?, ?)
 RETURNING *;
 
--- name: ListFeeds :many
-SELECT *
-FROM feeds
-WHERE baby_id = ?
+-- name: ListTallies :many
+SELECT created_at, kind
+FROM tallies
+WHERE tot_id = ?
 ORDER BY created_at DESC
-LIMIT 10;
-
--- name: CreateSoil :one
-INSERT INTO soils (baby_id, created_at, wet, soil)
-VALUES (?, ?, ?, ?)
-RETURNING *;
-
--- name: ListSoils :many
-SELECT *
-FROM soils
-WHERE baby_id = ?
-ORDER BY created_at DESC
-LIMIT 10;
+LIMIT 100;
 
 -- name: GetLastMilkTime :one
 SELECT created_at
-FROM feeds
-WHERE baby_id = ? AND feed_type = 0 AND ounces > 0
+FROM tallies
+WHERE tot_id = ?
+    AND kind LIKE 'Milk%'
 ORDER BY created_at DESC
 LIMIT 1;
 
 -- name: GetLastFoodTime :one
 SELECT created_at
-FROM feeds
-WHERE baby_id = ? AND feed_type = 1 AND ounces > 0
+FROM tallies
+WHERE tot_id = ?
+    AND kind LIKE 'Food%'
 ORDER BY created_at DESC
 LIMIT 1;
 
 -- name: GetLastWetTime :one
 SELECT created_at
-FROM soils
-WHERE baby_id = ? AND wet = 1
+FROM tallies
+WHERE tot_id = ?
+    AND (
+        kind = 'Soil'
+        OR kind = 'Wet & Soil'
+    )
 ORDER BY created_at DESC
 LIMIT 1;
 
 -- name: GetLastSoilTime :one
 SELECT created_at
-FROM soils
-WHERE baby_id = ? AND soil = 1
+FROM tallies
+WHERE tot_id = ?
+    AND (
+        kind = 'Wet'
+        OR kind = 'Wet & Soil'
+    )
+ORDER BY created_at DESC
+LIMIT 1;
+
+-- name: GetLastBathTime :one
+SELECT created_at
+FROM tallies
+WHERE tot_id = ?
+    AND kind = 'Bath'
+ORDER BY created_at DESC
+LIMIT 1;
+
+-- name: GetLastToothbrushTime :one
+SELECT created_at
+FROM tallies
+WHERE tot_id = ?
+    AND kind = 'Toothbrush'
 ORDER BY created_at DESC
 LIMIT 1;

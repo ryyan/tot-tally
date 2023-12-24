@@ -13,7 +13,7 @@ import (
 	"strings"
 	"time"
 
-	"tot-tally/totdb"
+	totdb "tot-tally/generated-sql"
 
 	_ "embed"
 
@@ -33,14 +33,22 @@ var (
 	templateIndex = template.Must(template.ParseFiles("assets/index.html"))
 	templateTally = template.Must(template.ParseFiles("assets/tally.html"))
 
-	feedTypeMap = map[int64]string{
-		0: "🍼",
-		1: "🥫",
-	}
-
-	soilBoolMap = map[int64]string{
-		0: "❌",
-		1: "✔️",
+	tallyKindMap = map[int64]string{
+		1:  "Milk 1oz",
+		2:  "Milk 2oz",
+		3:  "Milk 3oz",
+		4:  "Milk 4oz",
+		5:  "Milk 5oz",
+		6:  "Milk 6oz",
+		7:  "Milk 7oz",
+		8:  "Milk 8oz",
+		9:  "Food (Snack)",
+		10: "Food (Meal)",
+		11: "Wet",
+		12: "Soil",
+		13: "Wet & Soil",
+		14: "Bath",
+		15: "Toothbrush",
 	}
 
 	// https://docs.sqlc.dev/en/latest/tutorials/getting-started-sqlite.html
@@ -50,31 +58,25 @@ var (
 	// Needed for database and queries
 	ctx = context.Background()
 
-	// To be assigned at server initialization
+	// To be assigned at database initialization
 	queries *totdb.Queries
 )
 
 type TallyPageData struct {
-	Name              string
-	Timezone          string
-	Feeds             []Feed
-	Soils             []Soil
-	TimeSinceLastMilk string
-	TimeSinceLastFood string
-	TimeSinceLastWet  string
-	TimeSinceLastSoil string
+	Name                    string
+	Timezone                string
+	Tallies                 []Tally
+	TimeSinceLastMilk       string
+	TimeSinceLastFood       string
+	TimeSinceLastWet        string
+	TimeSinceLastSoil       string
+	TimeSinceLastBath       string
+	TimeSinceLastToothbrush string
 }
 
-type Feed struct {
-	Time     string
-	Ounces   string
-	FeedType string
-}
-
-type Soil struct {
+type Tally struct {
 	Time string
-	Wet  string
-	Soil string
+	Kind string
 }
 
 func main() {
@@ -100,7 +102,7 @@ func initializeDatabase() {
 
 	// Create database tables
 	_, err = db.ExecContext(ctx, ddl)
-	if err != nil && err.Error() != "table babies already exists" {
+	if err != nil && err.Error() != "table tots already exists" {
 		log.Fatal(err)
 	}
 
@@ -114,150 +116,153 @@ type HandlerE = func(w http.ResponseWriter, r *http.Request) (string, error)
 func handlerWrapper(handler HandlerE) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		log.Printf("%s %s\n", req.Method, req.URL.Path)
-		babyID, err := handler(w, req)
+		totID, err := handler(w, req)
 
 		if err != nil {
 			log.Printf("ERROR: %s\n", err.Error())
 
-			if babyID == "" || err.Error() == "baby does not exist" {
+			if totID == "" || err.Error() == "tot does not exist" {
 				http.Redirect(w, req, "/", http.StatusSeeOther)
 			} else {
-				http.Redirect(w, req, "/"+babyID, http.StatusSeeOther)
+				http.Redirect(w, req, "/"+totID, http.StatusSeeOther)
 			}
 		}
 	}
 }
 
 func rootHandler(w http.ResponseWriter, req *http.Request) (string, error) {
-	// Ex: http://localhost:5000/abc123 --> babyID=abc123
-	babyID := strings.TrimLeft(req.URL.Path, "/")
+	// Ex: http://localhost:5000/abc123 --> totID=abc123
+	totID := strings.TrimLeft(req.URL.Path, "/")
 
 	switch req.Method {
 	case http.MethodGet:
-		if babyID == "" {
+		if totID == "" {
 			// Index page
 			templateIndex.Execute(w, nil)
 		} else {
 			// Tally page
-			data, err := getTallyPageData(babyID)
+			data, err := getTallyPageData(totID)
 			if err != nil {
-				return babyID, err
+				return totID, err
 			}
 
 			templateTally.Execute(w, data)
 		}
 	case http.MethodPost:
-		if babyID == "" {
-			// Create new baby
-			newBabyId, err := createBaby(req)
+		if totID == "" {
+			// Create new tot
+			newTotId, err := createTot(req)
 			if err != nil {
-				return babyID, err
+				return totID, err
 			}
-			babyID = newBabyId
+			totID = newTotId
 		} else {
-			if req.FormValue("ounces") != "" {
-				// Create new feed
-				err := createFeed(req, babyID)
+			if req.FormValue("tally") != "" {
+				// Create new tally
+				err := createTally(req, totID)
 				if err != nil {
-					return babyID, err
-				}
-			} else if req.FormValue("soil") != "" {
-				// Create new soil
-				err := createSoil(req, babyID)
-				if err != nil {
-					return babyID, err
+					return totID, err
 				}
 			} else if req.FormValue("timezone") != "" {
 				// Update timezone
-				err := updateTimezone(req, babyID)
+				err := updateTimezone(req, totID)
 				if err != nil {
-					return babyID, err
+					return totID, err
 				}
 			}
 		}
 
-		// After POST, redirect to http://<url>/<babyID>
-		redirectURL := "/" + babyID
+		// After POST, redirect to http://<url>/<totID>
+		redirectURL := "/" + totID
 		http.Redirect(w, req, redirectURL, http.StatusSeeOther)
 	}
 
-	return babyID, nil
+	return totID, nil
 }
 
-func getTallyPageData(babyID string) (TallyPageData, error) {
-	// Get baby
-	log.Printf("GetBaby id=%s\n", babyID)
-	getBaby, err := queries.GetBaby(ctx, babyID)
+func getTallyPageData(totID string) (TallyPageData, error) {
+	// Get tot
+	log.Printf("GetTot id=%s\n", totID)
+	tot, err := queries.GetTot(ctx, totID)
 	if err != nil {
-		return TallyPageData{}, errors.New("baby does not exist")
+		return TallyPageData{}, errors.New("tot does not exist")
 	}
 
-	tzLocation, err := time.LoadLocation(getBaby.Timezone)
+	tzLocation, err := time.LoadLocation(tot.Timezone)
 	if err != nil {
 		return TallyPageData{}, err
 	}
 
 	// Get and format list of Feeds
-	log.Printf("ListFeeds babyID=%s\n", babyID)
-	listFeeds, err := queries.ListFeeds(ctx, babyID)
+	log.Printf("ListTallies totID=%s\n", totID)
+	listTallies, err := queries.ListTallies(ctx, totID)
 	if err != nil {
 		return TallyPageData{}, err
 	}
 
-	formattedFeeds := make([]Feed, len(listFeeds))
-	for i, feed := range listFeeds {
-		formattedTime := feed.CreatedAt.In(tzLocation).Format("2006-01-02 03:04 PM")
-		ouncesString := strconv.FormatInt(feed.Ounces, 10)
-		typeString := feedTypeMap[feed.FeedType]
-		formattedFeeds[i] = Feed{Time: formattedTime, FeedType: typeString, Ounces: ouncesString}
-	}
-
-	// Get and format list of Soils
-	log.Printf("ListSoils babyID=%s\n", babyID)
-	listSoils, err := queries.ListSoils(ctx, babyID)
-	if err != nil {
-		return TallyPageData{}, err
-	}
-
-	formattedSoils := make([]Soil, len(listSoils))
-	for i, soil := range listSoils {
-		formattedTime := soil.CreatedAt.In(tzLocation).Format("2006-01-02 03:04 PM")
-		formattedSoils[i] = Soil{Time: formattedTime, Wet: soilBoolMap[soil.Wet], Soil: soilBoolMap[soil.Soil]}
+	formattedTallies := make([]Tally, len(listTallies))
+	for i, feed := range listTallies {
+		formattedTime := feed.CreatedAt.In(tzLocation).Format("Mon 2006-01-02, 03:04 PM")
+		formattedTallies[i] = Tally{Time: formattedTime, Kind: feed.Kind}
 	}
 
 	// Get and generate human-readable "time since last X"
-	lastMilkTime, err := queries.GetLastMilkTime(ctx, babyID)
+	lastMilkTime, err := queries.GetLastMilkTime(ctx, totID)
 	timeSinceLastMilk := "not yet"
 	if err == nil {
 		timeSinceLastMilk = elapsed.Time(lastMilkTime.In(tzLocation))
 	}
 
-	lastFoodTime, err := queries.GetLastFoodTime(ctx, babyID)
+	lastFoodTime, err := queries.GetLastFoodTime(ctx, totID)
 	timeSinceLastFood := "not yet"
 	if err == nil {
 		timeSinceLastFood = elapsed.Time(lastFoodTime.In(tzLocation))
 	}
 
-	lastWetTime, err := queries.GetLastWetTime(ctx, babyID)
+	lastWetTime, err := queries.GetLastWetTime(ctx, totID)
 	timeSinceLastWet := "not yet"
 	if err == nil {
 		timeSinceLastWet = elapsed.Time(lastWetTime.In(tzLocation))
 	}
 
-	lastSoilTime, err := queries.GetLastSoilTime(ctx, babyID)
+	lastSoilTime, err := queries.GetLastSoilTime(ctx, totID)
 	timeSinceLastSoil := "not yet"
 	if err == nil {
 		timeSinceLastSoil = elapsed.Time(lastSoilTime.In(tzLocation))
 	}
 
-	data := TallyPageData{Name: getBaby.Name, Timezone: getBaby.Timezone, Feeds: formattedFeeds, Soils: formattedSoils, TimeSinceLastMilk: timeSinceLastMilk, TimeSinceLastFood: timeSinceLastFood, TimeSinceLastWet: timeSinceLastWet, TimeSinceLastSoil: timeSinceLastSoil}
+	lastBathTime, err := queries.GetLastBathTime(ctx, totID)
+	timeSinceLastBath := "not yet"
+	if err == nil {
+		timeSinceLastBath = elapsed.Time(lastBathTime.In(tzLocation))
+	}
+
+	lastToothbrushTime, err := queries.GetLastToothbrushTime(ctx, totID)
+	timeSinceLastToothbrush := "not yet"
+	if err == nil {
+		timeSinceLastToothbrush = elapsed.Time(lastToothbrushTime.In(tzLocation))
+	}
+
+	data := TallyPageData{
+		Name:                    tot.Name,
+		Timezone:                tot.Timezone,
+		Tallies:                 formattedTallies,
+		TimeSinceLastMilk:       timeSinceLastMilk,
+		TimeSinceLastFood:       timeSinceLastFood,
+		TimeSinceLastWet:        timeSinceLastWet,
+		TimeSinceLastSoil:       timeSinceLastSoil,
+		TimeSinceLastBath:       timeSinceLastBath,
+		TimeSinceLastToothbrush: timeSinceLastToothbrush,
+	}
+	log.Println(formattedTallies)
+	log.Println(data)
 	return data, nil
 }
 
-func createBaby(req *http.Request) (string, error) {
+func createTot(req *http.Request) (string, error) {
 	name := req.FormValue("name")
 	timezone := req.FormValue(("timezone"))
-	log.Printf("CreateBaby name=%s timezone=%s\n", name, timezone)
+	log.Printf("CreateTot name=%s timezone=%s\n", name, timezone)
 
 	name = strings.TrimSpace(name)
 	if name == "" {
@@ -272,39 +277,30 @@ func createBaby(req *http.Request) (string, error) {
 		return "", err
 	}
 
-	log.Printf("CreateBaby newID=%s\n", newID)
-	newBaby, err := queries.CreateBaby(ctx, totdb.CreateBabyParams{ID: newID, Name: name, Timezone: timezone})
+	log.Printf("CreateTot newID=%s\n", newID)
+	newTot, err := queries.CreateTot(ctx, totdb.CreateTotParams{ID: newID, Name: name, Timezone: timezone})
 	if err != nil {
 		return "", err
 	}
 
-	return newBaby.ID, nil
+	return newTot.ID, nil
 }
 
-func createFeed(req *http.Request, babyID string) error {
-	feedType := req.FormValue("feedType")
-	ounces := req.FormValue("ounces")
-	log.Printf("CreateFeed babyID=%s, feedType=%s, ounces=%s", babyID, feedType, ounces)
+func createTally(req *http.Request, totID string) error {
+	kindKey := req.FormValue("tally")
+	log.Printf("createTally totID=%s, kind=%s", totID, kindKey)
 
-	feedTypeInt, err := strconv.ParseInt(feedType, 10, 64)
+	kindKeyInt, err := strconv.ParseInt(kindKey, 10, 64)
 	if err != nil {
 		return err
 	}
 
-	if _, exists := feedTypeMap[feedTypeInt]; exists == false {
-		return errors.New("invalid feed type")
+	kind, exists := tallyKindMap[kindKeyInt]
+	if !exists {
+		return errors.New("invalid tally kind")
 	}
 
-	ouncesInt, err := strconv.ParseInt(ounces, 10, 64)
-	if err != nil {
-		return err
-	}
-
-	if ouncesInt < 1 || ouncesInt > 9 {
-		return errors.New("ounces must be between 1 and 9")
-	}
-
-	_, err = queries.CreateFeed(ctx, totdb.CreateFeedParams{BabyID: babyID, CreatedAt: time.Now().UTC(), FeedType: feedTypeInt, Ounces: ouncesInt})
+	_, err = queries.CreateTally(ctx, totdb.CreateTallyParams{TotID: totID, CreatedAt: time.Now().UTC(), Kind: kind})
 	if err != nil {
 		return err
 	}
@@ -312,46 +308,11 @@ func createFeed(req *http.Request, babyID string) error {
 	return nil
 }
 
-func createSoil(req *http.Request, babyID string) error {
-	wet := req.FormValue("wet")
-	soil := req.FormValue("soil")
-	log.Printf("CreateSoil babyID=%s, wet=%s, soil=%s", babyID, wet, soil)
-
-	wetInt, err := strconv.ParseInt(wet, 10, 64)
-	if err != nil {
-		return err
-	}
-
-	if wetInt != 0 && wetInt != 1 {
-		return errors.New("wet must be 0 or 1")
-	}
-
-	soilInt, err := strconv.ParseInt(soil, 10, 64)
-	if err != nil {
-		return err
-	}
-
-	if soilInt != 0 && soilInt != 1 {
-		return errors.New("soil must be 0 or 1")
-	}
-
-	if wetInt == 0 && soilInt == 0 {
-		return errors.New("must have either wet, soil, or both")
-	}
-
-	_, err = queries.CreateSoil(ctx, totdb.CreateSoilParams{BabyID: babyID, CreatedAt: time.Now().UTC(), Wet: wetInt, Soil: soilInt})
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func updateTimezone(req *http.Request, babyID string) error {
+func updateTimezone(req *http.Request, totID string) error {
 	timezone := req.FormValue("timezone")
-	log.Printf("UpdateTimezone id=%s, timezone=%s", babyID, timezone)
+	log.Printf("UpdateTimezone id=%s, timezone=%s", totID, timezone)
 
-	_, err := queries.UpdateTimezone(ctx, totdb.UpdateTimezoneParams{ID: babyID, Timezone: timezone})
+	_, err := queries.UpdateTimezone(ctx, totdb.UpdateTimezoneParams{ID: totID, Timezone: timezone})
 	if err != nil {
 		return err
 	}
