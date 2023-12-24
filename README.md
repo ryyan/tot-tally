@@ -6,7 +6,7 @@ No logins, passwords, or javascript!
 
 Simply bookmark and share the generated URL!
 
-https://github.com/ryyan/tot-tally/assets/4228816/88229fd9-29ec-4e9b-9cd6-34d82a54a160
+https://github.com/ryyan/tot-tally/assets/4228816/edcd180e-88d7-422d-a7f4-a03948582842
 
 ## Development
 
