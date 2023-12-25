@@ -203,7 +203,7 @@ func getTallyPageData(totID string) (TallyPageData, error) {
 
 	formattedTallies := make([]Tally, len(listTallies))
 	for i, feed := range listTallies {
-		formattedTime := feed.CreatedAt.In(tzLocation).Format("Mon 2006-01-02, 03:04 PM")
+		formattedTime := feed.CreatedAt.In(tzLocation).Format("Mon, Jan 02, 03:04 PM")
 		formattedTallies[i] = Tally{Time: formattedTime, Kind: feed.Kind}
 	}
 
