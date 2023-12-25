@@ -34,14 +34,14 @@ var (
 	templateTally = template.Must(template.ParseFiles("assets/tally.html"))
 
 	tallyKindMap = map[int64]string{
-		1:  "Milk 1oz",
-		2:  "Milk 2oz",
-		3:  "Milk 3oz",
-		4:  "Milk 4oz",
-		5:  "Milk 5oz",
-		6:  "Milk 6oz",
-		7:  "Milk 7oz",
-		8:  "Milk 8oz",
+		1:  "Milk 1",
+		2:  "Milk 2",
+		3:  "Milk 3",
+		4:  "Milk 4",
+		5:  "Milk 5",
+		6:  "Milk 6",
+		7:  "Milk 7",
+		8:  "Milk 8",
 		9:  "Food (Snack)",
 		10: "Food (Meal)",
 		11: "Wet",
@@ -204,7 +204,8 @@ func getTallyPageData(totID string) (TallyPageData, error) {
 	formattedTallies := make([]Tally, len(listTallies))
 	for i, feed := range listTallies {
 		formattedTime := feed.CreatedAt.In(tzLocation).Format("Mon, Jan 02, 03:04 PM")
-		formattedTallies[i] = Tally{Time: formattedTime, Kind: feed.Kind}
+		formattedKind := formatKind(feed.Kind)
+		formattedTallies[i] = Tally{Time: formattedTime, Kind: formattedKind}
 	}
 
 	// Get and generate human-readable "time since last X"
@@ -265,6 +266,18 @@ func getTallyPageData(totID string) (TallyPageData, error) {
 	log.Println(formattedTallies)
 	log.Println(data)
 	return data, nil
+}
+
+func formatKind(kind string) string {
+	kind = strings.Replace(kind, "Milk", "🍼", 1)
+	kind = strings.Replace(kind, "Food (Snack)", "🍎", 1)
+	kind = strings.Replace(kind, "Food (Meal)", "🍲", 1)
+	kind = strings.Replace(kind, "Wet & Soil", "🚽💩", 1)
+	kind = strings.Replace(kind, "Wet", "🚽", 1)
+	kind = strings.Replace(kind, "Soil", "💩", 1)
+	kind = strings.Replace(kind, "Bath", "🛁", 1)
+	kind = strings.Replace(kind, "Toothbrush", "🦷", 1)
+	return kind
 }
 
 func createTot(req *http.Request) (string, error) {
