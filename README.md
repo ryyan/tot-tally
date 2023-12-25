@@ -6,12 +6,12 @@ No logins, passwords, or javascript!
 
 Simply bookmark and share the generated URL!
 
-https://github.com/ryyan/tot-tally/assets/4228816/edcd180e-88d7-422d-a7f4-a03948582842
+https://github.com/ryyan/tot-tally/assets/4228816/85817788-c975-4aaa-9daf-b558bd3c6705
 
 ## Development
 
 - Install [go](https://go.dev/) (optionally using [gvm](https://github.com/moovweb/gvm))
-- Uses [sqlc](https://docs.sqlc.dev/) to auto-generate SQL code (`totdb` directory)
+- Uses [sqlc](https://docs.sqlc.dev/) to auto-generate SQL code (`generated-sql` directory)
   ```sh
   sqlc generate
   ```
