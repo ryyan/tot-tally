@@ -320,7 +320,12 @@ func updateTimezone(req *http.Request, totID string) error {
 	timezone := req.FormValue("timezone")
 	log.Printf("UpdateTimezone id=%s, timezone=%s", totID, timezone)
 
-	_, err := queries.UpdateTimezone(ctx, totdb.UpdateTimezoneParams{ID: totID, Timezone: timezone})
+	_, err := time.LoadLocation(timezone)
+	if err != nil {
+		return errors.New("invalid timezone")
+	}
+
+	_, err = queries.UpdateTimezone(ctx, totdb.UpdateTimezoneParams{ID: totID, Timezone: timezone})
 	if err != nil {
 		return err
 	}
