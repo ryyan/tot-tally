@@ -67,7 +67,8 @@ type TallyPageData struct {
 	Timezone                string
 	Tallies                 []Tally
 	TimeSinceLastMilk       string
-	TimeSinceLastFood       string
+	TimeSinceLastSnack      string
+	TimeSinceLastMeal       string
 	TimeSinceLastWet        string
 	TimeSinceLastSoil       string
 	TimeSinceLastBath       string
@@ -213,10 +214,16 @@ func getTallyPageData(totID string) (TallyPageData, error) {
 		timeSinceLastMilk = elapsed.Time(lastMilkTime.In(tzLocation))
 	}
 
-	lastFoodTime, err := queries.GetLastFoodTime(ctx, totID)
-	timeSinceLastFood := "not yet"
+	lastSnackTime, err := queries.GetLastSnackTime(ctx, totID)
+	timeSinceLastSnack := "not yet"
 	if err == nil {
-		timeSinceLastFood = elapsed.Time(lastFoodTime.In(tzLocation))
+		timeSinceLastSnack = elapsed.Time(lastSnackTime.In(tzLocation))
+	}
+
+	lastMealTime, err := queries.GetLastMealTime(ctx, totID)
+	timeSinceLastMeal := "not yet"
+	if err == nil {
+		timeSinceLastMeal = elapsed.Time(lastMealTime.In(tzLocation))
 	}
 
 	lastWetTime, err := queries.GetLastWetTime(ctx, totID)
@@ -248,7 +255,8 @@ func getTallyPageData(totID string) (TallyPageData, error) {
 		Timezone:                tot.Timezone,
 		Tallies:                 formattedTallies,
 		TimeSinceLastMilk:       timeSinceLastMilk,
-		TimeSinceLastFood:       timeSinceLastFood,
+		TimeSinceLastSnack:      timeSinceLastSnack,
+		TimeSinceLastMeal:       timeSinceLastMeal,
 		TimeSinceLastWet:        timeSinceLastWet,
 		TimeSinceLastSoil:       timeSinceLastSoil,
 		TimeSinceLastBath:       timeSinceLastBath,

@@ -35,11 +35,19 @@ WHERE tot_id = ?
 ORDER BY created_at DESC
 LIMIT 1;
 
--- name: GetLastFoodTime :one
+-- name: GetLastSnackTime :one
 SELECT created_at
 FROM tallies
 WHERE tot_id = ?
-    AND kind LIKE 'Food%'
+    AND kind LIKE 'Food (Snack)'
+ORDER BY created_at DESC
+LIMIT 1;
+
+-- name: GetLastMealTime :one
+SELECT created_at
+FROM tallies
+WHERE tot_id = ?
+    AND kind LIKE 'Food (Meal)'
 ORDER BY created_at DESC
 LIMIT 1;
 
