@@ -1,12 +1,12 @@
 # Tot Tally
 
-Tally your tot's ins and outs!
+Keep about of baby's ins and outs!
 
-No logins, passwords, or javascript!
+Just bookmark the generated URL!
 
-Simply bookmark and share the generated URL!
+No login or password required!
 
-https://github.com/ryyan/tot-tally/assets/4228816/edcd180e-88d7-422d-a7f4-a03948582842
+https://github.com/ryyan/tot-tally/assets/4228816/22d82898-0e81-4953-ac2d-d080568aaa48
 
 ## Development
 
