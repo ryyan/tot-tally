@@ -122,7 +122,7 @@ SELECT created_at
 FROM tallies
 WHERE tot_id = ?
     AND (
-        kind = 'Wet'
+        kind = 'Soil'
         OR kind = 'Wet & Soil'
     )
 ORDER BY created_at DESC
@@ -157,7 +157,7 @@ SELECT created_at
 FROM tallies
 WHERE tot_id = ?
     AND (
-        kind = 'Soil'
+        kind = 'Wet'
         OR kind = 'Wet & Soil'
     )
 ORDER BY created_at DESC
