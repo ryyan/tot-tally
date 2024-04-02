@@ -1,104 +1,97 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>TotTally</title>
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css"
-    />
-  </head>
 
-  <body>
-    <div class="container is-fluid">
-      <div class="columns is-centered is-vcentered is-mobile has-text-centered">
-        <section class="hero">
-          <div class="hero-body">
-            <h1 class="title">Tot-Tally</h1>
-            <h2 class="subtitle">👶📝</h2>
-          </div>
-        </section>
-      </div>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TotTally</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" />
+</head>
 
-      <div class="columns is-centered is-vcentered is-mobile content">
-        <ul>
-          <li>Keep about of baby's ins and outs!</li>
-          <li>Just bookmark the generated URL!</li>
-          <li>No login or password required!</li>
-          <li>
-            <a href="https://github.com/ryyan/tot-tally">
-              See here for a demo video!
-            </a>
-          </li>
-        </ul>
-      </div>
-      <br />
-
-      <div class="columns is-centered is-vcentered is-mobile">
-        <h2>Start a new tally...</h2>
-      </div>
-      <br />
-
-      <div class="columns is-centered is-vcentered is-mobile">
-        <form method="POST" class="box">
-          <div class="field">
-            <label class="label">Baby Name</label>
-            <div class="control">
-              <input
-                type="text"
-                name="name"
-                placeholder="Baby Name"
-                maxlength="20"
-                class="input control"
-              />
-            </div>
-          </div>
-
-          <div class="field">
-            <label class="label">Timezone</label>
-            <div class="control">
-              <div class="select">
-                <select id="timezone" name="timezone">
-                  <option value="Pacific/Honolulu">
-                    Pacific/Honolulu GMT-10:00
-                  </option>
-                  <option value="America/Anchorage">
-                    America/Anchorage GMT-9:00
-                  </option>
-                  <option value="America/Los_Angeles">
-                    America/Los_Angeles GMT-8:00
-                  </option>
-                  <option value="America/Boise">America/Boise GMT-7:00</option>
-                  <option value="America/Denver">
-                    America/Denver GMT-7:00
-                  </option>
-                  <option value="America/Phoenix">
-                    America/Phoenix GMT-7:00
-                  </option>
-                  <option value="America/Chicago" selected>
-                    America/Chicago GMT-6:00
-                  </option>
-                  <option value="America/Detroit">
-                    America/Detroit GMT-5:00
-                  </option>
-                  <option value="America/New_York">
-                    America/New_York GMT-5:00
-                  </option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <div class="field is-grouped is-grouped-centered">
-            <div class="control">
-              <button type="submit" class="button is-primary">Let's Go!</button>
-            </div>
-          </div>
-        </form>
-      </div>
+<body>
+  <div class="container is-fluid">
+    <div class="columns is-centered is-vcentered is-mobile has-text-centered">
+      <section class="hero">
+        <div class="hero-body">
+          <h1 class="title">Tot-Tally</h1>
+          <h2 class="subtitle">👶📝</h2>
+        </div>
+      </section>
     </div>
 
-    <br /><br />
-  </body>
+    <div class="columns is-centered is-vcentered is-mobile content">
+      <ul>
+        <li>Keep about of baby's ins and outs!</li>
+        <li>Just bookmark the generated URL!</li>
+        <li>No login or password required!</li>
+        <li>
+          <a href="https://github.com/ryyan/tot-tally">
+            See here for a demo video!
+          </a>
+        </li>
+      </ul>
+    </div>
+    <br />
+
+    <div class="columns is-centered is-vcentered is-mobile">
+      <h2>Start a new tally...</h2>
+    </div>
+    <br />
+
+    <div class="columns is-centered is-vcentered is-mobile">
+      <form method="POST" class="box">
+        <div class="field">
+          <label class="label">Baby Name</label>
+          <div class="control">
+            <input type="text" name="name" placeholder="Baby Name" maxlength="20" class="input control" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">Timezone</label>
+          <div class="control">
+            <div class="select">
+              <select id="timezone" name="timezone">
+                <option value="Pacific/Honolulu">
+                  Pacific/Honolulu GMT-10:00
+                </option>
+                <option value="America/Anchorage">
+                  America/Anchorage GMT-9:00
+                </option>
+                <option value="America/Los_Angeles">
+                  America/Los_Angeles GMT-8:00
+                </option>
+                <option value="America/Boise">America/Boise GMT-7:00</option>
+                <option value="America/Denver">
+                  America/Denver GMT-7:00
+                </option>
+                <option value="America/Phoenix">
+                  America/Phoenix GMT-7:00
+                </option>
+                <option value="America/Chicago" selected>
+                  America/Chicago GMT-6:00
+                </option>
+                <option value="America/Detroit">
+                  America/Detroit GMT-5:00
+                </option>
+                <option value="America/New_York">
+                  America/New_York GMT-5:00
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="field is-grouped is-grouped-centered">
+          <div class="control">
+            <button type="submit" class="button is-primary">Let's Go!</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <br /><br />
+</body>
+
 </html>
