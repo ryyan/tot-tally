@@ -11,10 +11,6 @@ https://github.com/ryyan/tot-tally/assets/4228816/22d82898-0e81-4953-ac2d-d08056
 ## Development
 
 - Install [go](https://go.dev/) (optionally using [gvm](https://github.com/moovweb/gvm))
-- Uses [sqlc](https://docs.sqlc.dev/) to auto-generate SQL code (`totdb` directory)
-  ```sh
-  sqlc generate
-  ```
 
 ## Run
 
