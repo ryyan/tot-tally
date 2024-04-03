@@ -123,22 +123,40 @@
         <h2>Tallies</h2>
       </div>
 
-      <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+      <table class="table is-centered has-text-centered is-bordered is-striped is-narrow is-hoverable is-fullwidth">
         <tr>
-          <th>Time</th>
           <th>Kind</th>
+          <th>Total In Last 24 Hours</th>
         </tr>
-        {{range .Tallies}}
         <tr>
-          <td class="is-family-monospace">{{.Time}}</td>
-          <td class="is-family-monospace">{{.Kind}}</td>
+          <td class="is-family-monospace">🍼</td>
+          <td class="is-family-monospace">{{.GeneratedStats.Last24HoursMilk}}oz</td>
         </tr>
-        {{end}}
-      </table>
+        <tr>
+          <td class="is-family-monospace">🚽</td>
+          <td class="is-family-monospace">{{.GeneratedStats.Last24HoursPee}}</td>
+        </tr>
+        <tr>
+          <td class="is-family-monospace">💩</td>
+          <td class="is-family-monospace">{{.GeneratedStats.Last24HoursPoo}}</td>
+        </tr>
 
-      <div class="content">
-        <p class="subtitle is-6 is-italic">Only the latest 300 tallies are saved</p>
-      </div>
+        <table class="table is-centered has-text-centered is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+          <tr>
+            <th>Time</th>
+            <th>Kind</th>
+          </tr>
+          {{range .Tallies}}
+          <tr>
+            <td class="is-family-monospace">{{.Time}}</td>
+            <td class="is-family-monospace">{{.Kind}}</td>
+          </tr>
+          {{end}}
+        </table>
+
+        <div class="content">
+          <p class="subtitle is-6 is-italic">Only the latest 300 tallies are saved</p>
+        </div>
     </div>
   </div>
 

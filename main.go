@@ -79,10 +79,11 @@ type Stats struct {
 }
 
 type TotPageData struct {
-	Name     string
-	Timezone string
-	Tallies  []TotPageTally
-	Stats    TotPageStats
+	Name           string
+	Timezone       string
+	Tallies        []TotPageTally
+	Stats          TotPageStats
+	GeneratedStats GeneratedStats
 }
 
 type TotPageTally struct {
@@ -98,6 +99,12 @@ type TotPageStats struct {
 	LastPoo   string
 	LastBath  string
 	LastBrush string
+}
+
+type GeneratedStats struct {
+	Last24HoursMilk string
+	Last24HoursPee  string
+	Last24HoursPoo  string
 }
 
 func main() {
@@ -221,6 +228,11 @@ func getTotPageData(totID string) (TotPageData, error) {
 		return TotPageData{}, err
 	}
 
+	generatedStats, err := generateStats(tot)
+	if err != nil {
+		return TotPageData{}, err
+	}
+
 	// Format Tallies
 	formattedTallies := make([]TotPageTally, len(tot.Tallies))
 	for i, tally := range tot.Tallies {
@@ -240,13 +252,52 @@ func getTotPageData(totID string) (TotPageData, error) {
 	}
 
 	data := TotPageData{
-		Name:     tot.Name,
-		Timezone: tot.Timezone,
-		Tallies:  formattedTallies,
-		Stats:    formattedStats,
+		Name:           tot.Name,
+		Timezone:       tot.Timezone,
+		Tallies:        formattedTallies,
+		Stats:          formattedStats,
+		GeneratedStats: generatedStats,
 	}
 
 	return data, nil
+}
+
+func generateStats(tot *Tot) (GeneratedStats, error) {
+	twentyFourHoursAgo := time.Now().UTC().Add(-24 * time.Hour).Add(-1 * time.Second)
+	var last24HoursMilk, last24HoursPee, last24HoursPoo int
+
+	for _, tally := range tot.Tallies {
+		if tally.Time.Before(twentyFourHoursAgo) {
+			// End loop since this and all tallies after will be past the 24-hour period
+			break
+		}
+
+		if strings.HasPrefix(tally.Kind, "🍼") {
+			i, err := strconv.Atoi(strings.TrimLeft(tally.Kind, "🍼"))
+			if err != nil {
+				return GeneratedStats{}, err
+			}
+
+			last24HoursMilk += i
+			continue
+		}
+
+		switch tally.Kind {
+		case tallyKindMap[11]:
+			last24HoursPee += 1
+		case tallyKindMap[12]:
+			last24HoursPoo += 1
+		case tallyKindMap[13]:
+			last24HoursPee += 1
+			last24HoursPoo += 1
+		}
+	}
+
+	return GeneratedStats{
+		Last24HoursMilk: strconv.Itoa(last24HoursMilk),
+		Last24HoursPee:  strconv.Itoa(last24HoursPee),
+		Last24HoursPoo:  strconv.Itoa(last24HoursPoo),
+	}, nil
 }
 
 func formatTime(t *time.Time, tzLocation *time.Location) string {
@@ -439,7 +490,6 @@ func saveTot(tot *Tot) error {
 
 func loadTot(totID string) (*Tot, error) {
 	filename := fmt.Sprintf("./%s/%s.json", TotDirectory, totID)
-	log.Println(filename)
 	totFile, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, errors.New("Tot not found")
