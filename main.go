@@ -29,7 +29,7 @@ const (
 	// Maximum number of Tallies to save per Tot
 	MaxTallies = 300
 
-	TimeFormat = "Jan 02, 03:04PM"
+	TimeFormat = "02 Jan 03:04PM"
 )
 
 var (
