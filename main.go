@@ -14,8 +14,6 @@ import (
 	"strings"
 	"time"
 	"unicode"
-
-	"github.com/rvflash/elapsed"
 )
 
 const (
@@ -30,6 +28,8 @@ const (
 
 	// Maximum number of Tallies to save per Tot
 	MaxTallies = 300
+
+	TimeFormat = "Jan 02, 03:04PM"
 )
 
 var (
@@ -37,14 +37,14 @@ var (
 	templateTally = template.Must(template.ParseFiles("assets/tally.html"))
 
 	tallyKindMap = map[int64]string{
-		1:  "🍼 1", // Milk (oz)
-		2:  "🍼 2",
-		3:  "🍼 3",
-		4:  "🍼 4",
-		5:  "🍼 5",
-		6:  "🍼 6",
-		7:  "🍼 7",
-		8:  "🍼 8",
+		1:  "🍼1", // Milk (oz)
+		2:  "🍼2",
+		3:  "🍼3",
+		4:  "🍼4",
+		5:  "🍼5",
+		6:  "🍼6",
+		7:  "🍼7",
+		8:  "🍼8",
 		9:  "🍎",  // Snack
 		10: "🍲",  // Meal
 		11: "🚽",  // Pee
@@ -60,30 +60,44 @@ type Tot struct {
 	Name     string
 	Timezone string
 	Tallies  []Tally
+	Stats    Stats
 }
 
 type Tally struct {
-	Time time.Time
+	Time *time.Time
 	Kind string
+}
+
+type Stats struct {
+	LastMilk  *time.Time
+	LastSnack *time.Time
+	LastMeal  *time.Time
+	LastPee   *time.Time
+	LastPoo   *time.Time
+	LastBath  *time.Time
+	LastBrush *time.Time
 }
 
 type TotPageData struct {
 	Name     string
 	Timezone string
 	Tallies  []TotPageTally
-
-	TimeSinceLastMilk  string
-	TimeSinceLastSnack string
-	TimeSinceLastMeal  string
-	TimeSinceLastPee   string
-	TimeSinceLastPoo   string
-	TimeSinceLastBath  string
-	TimeSinceLastBrush string
+	Stats    TotPageStats
 }
 
 type TotPageTally struct {
 	Time string
 	Kind string
+}
+
+type TotPageStats struct {
+	LastMilk  string
+	LastSnack string
+	LastMeal  string
+	LastPee   string
+	LastPoo   string
+	LastBath  string
+	LastBrush string
 }
 
 func main() {
@@ -210,33 +224,37 @@ func getTotPageData(totID string) (TotPageData, error) {
 	// Format Tallies
 	formattedTallies := make([]TotPageTally, len(tot.Tallies))
 	for i, tally := range tot.Tallies {
-		formattedTime := tally.Time.In(tzLocation).Format("Jan 02, 03:04PM")
+		formattedTime := tally.Time.In(tzLocation).Format(TimeFormat)
 		formattedTallies[i] = TotPageTally{Time: formattedTime, Kind: tally.Kind}
 	}
 
-	// Get and generate human-readable "time since last X"
-	timeSinceLastMilk := tot.lastTimePrefix(tzLocation, "🍼")
-	timeSinceLastSnack := tot.lastTime(tzLocation, "🍎")
-	timeSinceLastMeal := tot.lastTime(tzLocation, "🍲")
-	timeSinceLastPee := tot.lastTime(tzLocation, "🚽")
-	timeSinceLastPoo := tot.lastTime(tzLocation, "💩")
-	timeSinceLastBath := tot.lastTime(tzLocation, "🛁")
-	timeSinceLastBrush := tot.lastTime(tzLocation, "🦷")
+	// Format stats
+	formattedStats := TotPageStats{
+		LastMilk:  formatTime(tot.Stats.LastMilk, tzLocation),
+		LastSnack: formatTime(tot.Stats.LastSnack, tzLocation),
+		LastMeal:  formatTime(tot.Stats.LastMeal, tzLocation),
+		LastPee:   formatTime(tot.Stats.LastPee, tzLocation),
+		LastPoo:   formatTime(tot.Stats.LastPoo, tzLocation),
+		LastBath:  formatTime(tot.Stats.LastBath, tzLocation),
+		LastBrush: formatTime(tot.Stats.LastBrush, tzLocation),
+	}
 
 	data := TotPageData{
-		Name:               tot.Name,
-		Timezone:           tot.Timezone,
-		Tallies:            formattedTallies,
-		TimeSinceLastMilk:  timeSinceLastMilk,
-		TimeSinceLastSnack: timeSinceLastSnack,
-		TimeSinceLastMeal:  timeSinceLastMeal,
-		TimeSinceLastPee:   timeSinceLastPee,
-		TimeSinceLastPoo:   timeSinceLastPoo,
-		TimeSinceLastBath:  timeSinceLastBath,
-		TimeSinceLastBrush: timeSinceLastBrush,
+		Name:     tot.Name,
+		Timezone: tot.Timezone,
+		Tallies:  formattedTallies,
+		Stats:    formattedStats,
 	}
 
 	return data, nil
+}
+
+func formatTime(t *time.Time, tzLocation *time.Location) string {
+	if t == nil || t.IsZero() {
+		return "not yet"
+	}
+
+	return t.In(tzLocation).Format(TimeFormat)
 }
 
 func createTot(name string, timezone string) (string, error) {
@@ -281,37 +299,51 @@ func createTot(name string, timezone string) (string, error) {
 
 func createTally(tot *Tot, kindKey string) error {
 	log.Printf("createTally totID=%s, kindKey=%s", tot.ID, kindKey)
-
-	kindKeyInt, err := strconv.ParseInt(kindKey, 10, 64)
+	kind, err := parseKindKey(kindKey)
 	if err != nil {
 		return err
 	}
 
-	kind, exists := tallyKindMap[kindKeyInt]
-	if !exists {
-		return errors.New("invalid tally kind")
+	now := time.Now().UTC()
+	prependTally(tot, kind, &now)
+	updateStat(tot, kind, &now)
+	return nil
+}
+
+func parseKindKey(kindKey string) (string, error) {
+	kindKeyInt, err := strconv.ParseInt(kindKey, 10, 64)
+	if err != nil {
+		return "", err
 	}
 
+	kind, exists := tallyKindMap[kindKeyInt]
+	if !exists {
+		return "", errors.New("invalid tally kind")
+	}
+
+	return kind, nil
+}
+
+func prependTally(tot *Tot, kind string, now *time.Time) {
 	newTallies := []Tally{}
 
-	switch kindKeyInt {
-	case 13:
+	switch kind {
+	case tallyKindMap[13]:
 		// Record pee and poo seperately
 		newTallies = append(newTallies, Tally{
-			Time: time.Now().UTC(),
+			Time: now,
 			Kind: tallyKindMap[11],
 		})
 
 		newTallies = append(newTallies, Tally{
-			Time: time.Now().UTC(),
+			Time: now,
 			Kind: tallyKindMap[12],
 		})
 	default:
 		newTallies = append(newTallies, Tally{
-			Time: time.Now().UTC(),
+			Time: now,
 			Kind: kind,
 		})
-
 	}
 
 	// Prepend to ensure latest are first
@@ -321,8 +353,31 @@ func createTally(tot *Tot, kindKey string) error {
 	if len(tot.Tallies) > MaxTallies {
 		tot.Tallies = tot.Tallies[:MaxTallies]
 	}
+}
 
-	return nil
+func updateStat(tot *Tot, kind string, now *time.Time) {
+	if strings.HasPrefix(kind, "🍼") {
+		tot.Stats.LastMilk = now
+		return
+	}
+
+	switch kind {
+	case tallyKindMap[9]:
+		tot.Stats.LastSnack = now
+	case tallyKindMap[10]:
+		tot.Stats.LastMeal = now
+	case tallyKindMap[11]:
+		tot.Stats.LastPee = now
+	case tallyKindMap[12]:
+		tot.Stats.LastPoo = now
+	case tallyKindMap[13]:
+		tot.Stats.LastPee = now
+		tot.Stats.LastPoo = now
+	case tallyKindMap[14]:
+		tot.Stats.LastBath = now
+	case tallyKindMap[15]:
+		tot.Stats.LastBrush = now
+	}
 }
 
 func updateTimezone(tot *Tot, timezone string) error {
@@ -388,36 +443,4 @@ func loadTot(totID string) (*Tot, error) {
 	}
 
 	return tot, nil
-}
-
-func (tot *Tot) lastTimePrefix(tzLocation *time.Location, kind string) string {
-	var lastTime time.Time
-
-	for _, tally := range tot.Tallies {
-		if strings.HasPrefix(tally.Kind, kind) {
-			lastTime = tally.Time
-		}
-	}
-
-	return elapsedTime(tzLocation, &lastTime)
-}
-
-func (tot *Tot) lastTime(tzLocation *time.Location, kind string) string {
-	var lastTime time.Time
-
-	for _, tally := range tot.Tallies {
-		if tally.Kind == kind {
-			lastTime = tally.Time
-		}
-	}
-
-	return elapsedTime(tzLocation, &lastTime)
-}
-
-func elapsedTime(tzLocation *time.Location, time *time.Time) string {
-	if time.IsZero() {
-		return "not yet"
-	} else {
-		return elapsed.Time(time.In(tzLocation))
-	}
 }

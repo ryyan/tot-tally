@@ -24,7 +24,7 @@
         <form method="POST" class="box">
           <div class="content">
             <h2>Milk</h2>
-            <span>Last 🍼: {{.TimeSinceLastMilk}}</span>
+            <span>Last 🍼: {{.Stats.LastMilk}}</span>
           </div>
 
           <div class="control buttons is-centered">
@@ -60,9 +60,9 @@
         <form method="POST" class="box">
           <div class="content">
             <h2>Food</h2>
-            <span>Last 🍎: {{.TimeSinceLastSnack}}</span>
+            <span>Last 🍎: {{.Stats.LastSnack}}</span>
             <br />
-            <span>Last 🍲: {{.TimeSinceLastMeal}}</span>
+            <span>Last 🍲: {{.Stats.LastMeal}}</span>
           </div>
 
           <div class="control buttons is-centered">
@@ -80,9 +80,9 @@
         <form method="POST" class="box">
           <div class="content">
             <h2>Soils</h2>
-            <span>Last 🚽: {{.TimeSinceLastPee}}</span>
+            <span>Last 🚽: {{.Stats.LastPee}}</span>
             <br />
-            <span>Last 💩: {{.TimeSinceLastPoo}}</span>
+            <span>Last 💩: {{.Stats.LastPoo}}</span>
           </div>
 
           <div class="control buttons is-centered">
@@ -103,9 +103,9 @@
         <form method="POST" class="box">
           <div class="content">
             <h2>Hygiene</h2>
-            <span>Last 🛁: {{.TimeSinceLastBath}}</span>
+            <span>Last 🛁: {{.Stats.LastBath}}</span>
             <br />
-            <span>Last 🦷: {{.TimeSinceLastBrush}}</span>
+            <span>Last 🦷: {{.Stats.LastBrush}}</span>
           </div>
 
           <div class="control buttons is-centered">
@@ -141,7 +141,11 @@
       <div class="column">
         <form method="POST" class="box">
           <div class="content">
-            <h2>Timezone</h2>
+            <h2>Settings</h2>
+          </div>
+
+          <div class="content">
+            <h3>Timezone</h3>
             <p>Current: {{.Timezone}}</p>
           </div>
           <div class="field">
