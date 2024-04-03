@@ -24,7 +24,7 @@
         <form method="POST" class="box">
           <div class="content">
             <h2>Milk</h2>
-            <span>Last 🍼: {{.Stats.LastMilk}}</span>
+            <span class="is-family-monospace">Last 🍼: {{.Stats.LastMilk}}</span>
           </div>
 
           <div class="control buttons is-centered">
@@ -60,9 +60,9 @@
         <form method="POST" class="box">
           <div class="content">
             <h2>Food</h2>
-            <span>Last 🍎: {{.Stats.LastSnack}}</span>
+            <span class="is-family-monospace">Last 🍎: {{.Stats.LastSnack}}</span>
             <br />
-            <span>Last 🍲: {{.Stats.LastMeal}}</span>
+            <span class="is-family-monospace">Last 🍲: {{.Stats.LastMeal}}</span>
           </div>
 
           <div class="control buttons is-centered">
@@ -80,9 +80,9 @@
         <form method="POST" class="box">
           <div class="content">
             <h2>Soils</h2>
-            <span>Last 🚽: {{.Stats.LastPee}}</span>
+            <span class="is-family-monospace">Last 🚽: {{.Stats.LastPee}}</span>
             <br />
-            <span>Last 💩: {{.Stats.LastPoo}}</span>
+            <span class="is-family-monospace">Last 💩: {{.Stats.LastPoo}}</span>
           </div>
 
           <div class="control buttons is-centered">
@@ -103,9 +103,9 @@
         <form method="POST" class="box">
           <div class="content">
             <h2>Hygiene</h2>
-            <span>Last 🛁: {{.Stats.LastBath}}</span>
+            <span class="is-family-monospace">Last 🛁: {{.Stats.LastBath}}</span>
             <br />
-            <span>Last 🦷: {{.Stats.LastBrush}}</span>
+            <span class="is-family-monospace">Last 🦷: {{.Stats.LastBrush}}</span>
           </div>
 
           <div class="control buttons is-centered">
@@ -122,6 +122,10 @@
 
     <div class="columns is-centered is-vcentered is-mobile has-text-centered box">
       <div class="column">
+        <div class="content">
+          <h2>Tallies</h2>
+        </div>
+
         <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
           <tr>
             <th>Time</th>
@@ -129,11 +133,15 @@
           </tr>
           {{range .Tallies}}
           <tr>
-            <td>{{.Time}}</td>
-            <td>{{.Kind}}</td>
+            <td class="is-family-monospace">{{.Time}}</td>
+            <td class="is-family-monospace">{{.Kind}}</td>
           </tr>
           {{end}}
         </table>
+
+        <div class="content">
+          <p class="subtitle is-6 is-italic">Only the latest 300 tallies are saved</p>
+        </div>
       </div>
     </div>
 
