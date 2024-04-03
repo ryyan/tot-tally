@@ -276,9 +276,18 @@ func createTot(name string, timezone string) (string, error) {
 		return "", errors.New("invalid timezone")
 	}
 
-	newID, err := generateID()
-	if err != nil {
-		return "", err
+	var newID string
+	for {
+		newID, err = generateID()
+		if err != nil {
+			return "", err
+		}
+
+		tot, _ := loadTot(newID)
+		if tot == nil {
+			// ID is not in use, so break
+			break
+		}
 	}
 	log.Printf("CreateTot newID=%s\n", newID)
 
@@ -433,13 +442,13 @@ func loadTot(totID string) (*Tot, error) {
 	log.Println(filename)
 	totFile, err := os.ReadFile(filename)
 	if err != nil {
-		return &Tot{}, errors.New("Tot not found")
+		return nil, errors.New("Tot not found")
 	}
 
 	var tot *Tot = &Tot{}
 	err = json.Unmarshal(totFile, tot)
 	if err != nil {
-		return &Tot{}, err
+		return nil, err
 	}
 
 	return tot, nil
