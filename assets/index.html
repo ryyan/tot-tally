@@ -8,18 +8,12 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css" />
 </head>
 
-<body>
-  <div class="container is-fluid">
-    <div class="columns is-centered is-vcentered is-mobile has-text-centered">
-      <section class="hero">
-        <div class="hero-body">
-          <h1 class="title">Tot-Tally</h1>
-          <h2 class="subtitle">👶📝</h2>
-        </div>
-      </section>
-    </div>
+<body class="container is-fluid">
+  <section class="hero is-centered is-vcentered is-mobile has-text-centered">
+    <div class="hero-body">
+      <h1 class="title">Tot-Tally</h1>
+      <h2 class="subtitle">👶📝</h2>
 
-    <div class="columns is-centered is-vcentered is-mobile content">
       <ul>
         <li>Keep a tally of tot's ins and outs!</li>
         <li>No login or password required</li>
@@ -31,67 +25,59 @@
         </li>
       </ul>
     </div>
+  </section>
 
-    <br />
-
-    <div class="columns is-centered is-vcentered is-mobile">
-      <form method="POST" class="box">
-        <div class="columns is-centered is-vcentered is-mobile content">
-          <h3>Start A New Tally</h3>
+  <div class="columns is-centered is-vcentered is-mobile">
+    <form method="POST" class="box">
+      <div class="field">
+        <label class="label">Baby Name</label>
+        <div class="control">
+          <input type="text" name="name" placeholder="Baby Name" maxlength="20" class="input control" />
         </div>
+      </div>
 
-        <div class="field">
-          <label class="label">Baby Name</label>
-          <div class="control">
-            <input type="text" name="name" placeholder="Baby Name" maxlength="20" class="input control" />
+      <div class="field">
+        <label class="label">Timezone</label>
+        <div class="control">
+          <div class="select">
+            <select id="timezone" name="timezone">
+              <option value="Pacific/Honolulu">
+                Pacific/Honolulu GMT-10:00
+              </option>
+              <option value="America/Anchorage">
+                America/Anchorage GMT-9:00
+              </option>
+              <option value="America/Los_Angeles">
+                America/Los_Angeles GMT-8:00
+              </option>
+              <option value="America/Boise">America/Boise GMT-7:00</option>
+              <option value="America/Denver">
+                America/Denver GMT-7:00
+              </option>
+              <option value="America/Phoenix">
+                America/Phoenix GMT-7:00
+              </option>
+              <option value="America/Chicago" selected>
+                America/Chicago GMT-6:00
+              </option>
+              <option value="America/Detroit">
+                America/Detroit GMT-5:00
+              </option>
+              <option value="America/New_York">
+                America/New_York GMT-5:00
+              </option>
+            </select>
           </div>
         </div>
+      </div>
 
-        <div class="field">
-          <label class="label">Timezone</label>
-          <div class="control">
-            <div class="select">
-              <select id="timezone" name="timezone">
-                <option value="Pacific/Honolulu">
-                  Pacific/Honolulu GMT-10:00
-                </option>
-                <option value="America/Anchorage">
-                  America/Anchorage GMT-9:00
-                </option>
-                <option value="America/Los_Angeles">
-                  America/Los_Angeles GMT-8:00
-                </option>
-                <option value="America/Boise">America/Boise GMT-7:00</option>
-                <option value="America/Denver">
-                  America/Denver GMT-7:00
-                </option>
-                <option value="America/Phoenix">
-                  America/Phoenix GMT-7:00
-                </option>
-                <option value="America/Chicago" selected>
-                  America/Chicago GMT-6:00
-                </option>
-                <option value="America/Detroit">
-                  America/Detroit GMT-5:00
-                </option>
-                <option value="America/New_York">
-                  America/New_York GMT-5:00
-                </option>
-              </select>
-            </div>
-          </div>
+      <div class="field is-grouped is-grouped-centered">
+        <div class="control">
+          <button type="submit" class="button is-primary">Let's Go!</button>
         </div>
-
-        <div class="field is-grouped is-grouped-centered">
-          <div class="control">
-            <button type="submit" class="button is-primary">Let's Go!</button>
-          </div>
-        </div>
-      </form>
-    </div>
+      </div>
+    </form>
   </div>
-
-  <br /><br />
 </body>
 
 </html>
