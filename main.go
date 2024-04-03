@@ -113,7 +113,7 @@ func main() {
 
 	fileServer := http.FileServer(http.Dir("assets/static/"))
 	serveMux.Handle("GET /favicon.ico", http.StripPrefix("", fileServer))
-	serveMux.Handle("GET /static/", http.StripPrefix("/static/", fileServer))
+	//serveMux.Handle("GET /static/", http.StripPrefix("/static/", fileServer))
 
 	// Start server
 	log.Printf("Server started at http://localhost:%s\n", Port)
