@@ -1,83 +1,86 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Tot-Tally</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css" />
+  <link rel="stylesheet" href="/static/style.css" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#121212" />
 </head>
-
-<body class="container is-fluid">
-  <section class="hero is-centered is-vcentered is-mobile has-text-centered">
-    <div class="hero-body">
-      <h1 class="title">Tot-Tally</h1>
-      <h2 class="subtitle">👶📝</h2>
-
-      <ul>
+<body>
+  <main class="container">
+    <header>
+      <h1>Tot-Tally</h1>
+      <ul class="features">
         <li>Keep a tally of tot's ins and outs!</li>
         <li>No login or password required</li>
         <li>Bookmark the generated URL</li>
         <li>
-          <a href="https://github.com/ryyan/tot-tally">
-            Click here for a demo video
-          </a>
+          <a href="https://github.com/ryyan/tot-tally" target="_blank" rel="noopener noreferrer">Click here for a demo video</a>
         </li>
       </ul>
-    </div>
-  </section>
+    </header>
 
-  <div class="columns is-centered is-vcentered is-mobile">
-    <form method="POST" class="box">
+    <form method="POST" class="card index-card">
       <div class="field">
-        <label class="label">Baby Name</label>
-        <div class="control">
-          <input type="text" name="name" placeholder="Baby Name" maxlength="20" class="input control" />
+        <label style="display: block; font-size: 1.25rem; font-weight: 700; margin-bottom: 1.25rem;">Tot</label>
+        <div class="avatar-group">
+          <label class="avatar-label"><input type="radio" name="name" value="👶" checked><span>👶</span></label>
+          <label class="avatar-label"><input type="radio" name="name" value="🧒"><span>🧒</span></label>
+          <label class="avatar-label"><input type="radio" name="name" value="👦"><span>👦</span></label>
+          <label class="avatar-label"><input type="radio" name="name" value="👧"><span>👧</span></label>
+          <label class="avatar-label"><input type="radio" name="name" value="🐥"><span>🐥</span></label>
+          <label class="avatar-label"><input type="radio" name="name" value="🧸"><span>🧸</span></label>
+          <label class="avatar-label"><input type="radio" name="name" value="🦖"><span>🦖</span></label>
+          <label class="avatar-label"><input type="radio" name="name" value="🐰"><span>🐰</span></label>
+          <label class="avatar-label"><input type="radio" name="name" value="🎀"><span>🎀</span></label>
+          <label class="avatar-label"><input type="radio" name="name" value="👑"><span>👑</span></label>
+          <label class="avatar-label"><input type="radio" name="name" value="🚂"><span>🚂</span></label>
+          <label class="avatar-label"><input type="radio" name="name" value="🦄"><span>🦄</span></label>
+          <label class="avatar-label"><input type="radio" name="name" value="⭐"><span>⭐</span></label>
+          <label class="avatar-label"><input type="radio" name="name" value="🚀"><span>🚀</span></label>
+          <label class="avatar-label"><input type="radio" name="name" value="🌻"><span>🌻</span></label>
+          <label class="avatar-label"><input type="radio" name="name" value="🐞"><span>🐞</span></label>
+          <label class="avatar-label"><input type="radio" name="name" value="🐘"><span>🐘</span></label>
+          <label class="avatar-label"><input type="radio" name="name" value="🦒"><span>🦒</span></label>
+          <label class="avatar-label"><input type="radio" name="name" value="🐼"><span>🐼</span></label>
+          <label class="avatar-label"><input type="radio" name="name" value="🐝"><span>🐝</span></label>
         </div>
       </div>
 
-      <div class="field">
-        <label class="label">Timezone</label>
-        <div class="control">
-          <div class="select">
-            <select id="timezone" name="timezone">
-              <option value="Pacific/Honolulu">
-                Pacific/Honolulu GMT-10:00
-              </option>
-              <option value="America/Anchorage">
-                America/Anchorage GMT-9:00
-              </option>
-              <option value="America/Los_Angeles">
-                America/Los_Angeles GMT-8:00
-              </option>
-              <option value="America/Boise">America/Boise GMT-7:00</option>
-              <option value="America/Denver">
-                America/Denver GMT-7:00
-              </option>
-              <option value="America/Phoenix">
-                America/Phoenix GMT-7:00
-              </option>
-              <option value="America/Chicago" selected>
-                America/Chicago GMT-6:00
-              </option>
-              <option value="America/Detroit">
-                America/Detroit GMT-5:00
-              </option>
-              <option value="America/New_York">
-                America/New_York GMT-5:00
-              </option>
-            </select>
-          </div>
+      <div class="field" style="margin-top: 3rem;">
+        <label style="display: block; font-size: 1.25rem; font-weight: 700; margin-bottom: 1.25rem;">Milk Setting</label>
+        <div class="avatar-group">
+          <label class="avatar-label" title="Bottle Only"><input type="radio" name="milk_setting" value="bottle"><span>🍼</span></label>
+          <label class="avatar-label" title="Nursing Only"><input type="radio" name="milk_setting" value="nursing"><span>🤱</span></label>
+          <label class="avatar-label" title="Both" checked><input type="radio" name="milk_setting" value="both" checked><span>🍼🤱</span></label>
         </div>
       </div>
 
-      <div class="field is-grouped is-grouped-centered">
-        <div class="control">
-          <button type="submit" class="button is-primary">Let's Go!</button>
-        </div>
+      <div class="field" style="margin-top: 3rem;">
+        <label for="timezone" style="display: block; font-size: 1.25rem; font-weight: 700; margin-bottom: 1.25rem;">Timezone</label>
+        <select id="timezone" name="timezone">
+          <option value="Pacific/Honolulu">Pacific/Honolulu GMT-10:00</option>
+          <option value="America/Anchorage">America/Anchorage GMT-9:00</option>
+          <option value="America/Los_Angeles">America/Los_Angeles GMT-8:00</option>
+          <option value="America/Boise">America/Boise GMT-7:00</option>
+          <option value="America/Denver">America/Denver GMT-7:00</option>
+          <option value="America/Phoenix">America/Phoenix GMT-7:00</option>
+          <option value="America/Chicago" selected>America/Chicago GMT-6:00</option>
+          <option value="America/Detroit">America/Detroit GMT-5:00</option>
+          <option value="America/New_York">America/New_York GMT-5:00</option>
+        </select>
+      </div>
+
+      <div class="text-center" style="margin-top: 3.5rem; padding-bottom: 2rem;">
+        <button type="submit" class="button">Tally-go!</button>
       </div>
     </form>
-  </div>
-</body>
 
+    {{if .FlashMessage}}
+    <div class="toast {{if .IsErrorFlash}}toast-error{{end}}">{{.FlashMessage}}</div>
+    {{end}}
+  </main>
+</body>
 </html>

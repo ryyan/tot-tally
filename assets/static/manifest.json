@@ -1,0 +1,14 @@
+{
+  "name": "Tot-Tally",
+  "short_name": "Tot-Tally",
+  "description": "A simple tracker for your tot's daily life.",
+  "start_url": "/",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64",
+      "type": "image/x-icon"
+    }
+  ]
+}

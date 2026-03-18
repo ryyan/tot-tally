@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tot-Tally {{.Name}}</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <link rel="manifest" href="/manifest.json?id={{.ID}}" />
+  <meta name="theme-color" content="#121212" />
+</head>
+<body>
+  <main class="container">
+    <header>
+      <h1>Tot-Tally <span class="tot-name">{{.Name}}</span></h1>
+    </header>
+
+    <div class="tally-grid">
+      <form method="POST" class="card card-milk text-center">
+        <div class="card-header">
+          <h2>Milk</h2>
+          {{if or (eq .MilkSetting "bottle") (eq .MilkSetting "both")}}
+          <span class="stats-text">Last 🍼: {{.Stats.LastMilk}}{{if .Stats.LastMilkAmount}} ({{.Stats.LastMilkAmount}} oz){{end}}</span>
+          {{end}}
+          {{if or (eq .MilkSetting "nursing") (eq .MilkSetting "both")}}
+          <span class="stats-text">Last 🤱: {{.Stats.LastNurse}}{{if .Stats.LastNurseSide}} ({{.Stats.LastNurseSide}}){{end}}</span>
+          {{end}}
+        </div>
+        <div class="buttons">
+          {{if or (eq .MilkSetting "bottle") (eq .MilkSetting "both")}}
+          <button type="submit" class="button" name="tally" value="1">1 oz</button>
+          <button type="submit" class="button" name="tally" value="2">2 oz</button>
+          <button type="submit" class="button" name="tally" value="3">3 oz</button>
+          <button type="submit" class="button" name="tally" value="4">4 oz</button>
+          <button type="submit" class="button" name="tally" value="5">5 oz</button>
+          <button type="submit" class="button" name="tally" value="6">6 oz</button>
+          <button type="submit" class="button" name="tally" value="7">7 oz</button>
+          <button type="submit" class="button" name="tally" value="8">8 oz</button>
+          {{end}}
+
+          {{if eq .MilkSetting "both"}}
+          <div style="flex-basis: 100%; height: 0;"></div>
+          {{end}}
+
+          {{if or (eq .MilkSetting "nursing") (eq .MilkSetting "both")}}
+          <button type="submit" class="button" name="tally" value="16">🤱L Side</button>
+          <button type="submit" class="button" name="tally" value="17">🤱R Side</button>
+          {{end}}
+        </div>
+      </form>
+
+      <form method="POST" class="card card-soils text-center">
+        <div class="card-header">
+          <h2>Soils</h2>
+          <span class="stats-text">Last 🚽: {{.Stats.LastPee}}</span>
+          <span class="stats-text">Last 💩: {{.Stats.LastPoo}}</span>
+        </div>
+        <div class="buttons">
+          <button type="submit" class="button" name="tally" value="11">Pee</button>
+          <button type="submit" class="button" name="tally" value="12">Poo</button>
+          <button type="submit" class="button" name="tally" value="13">Both</button>
+        </div>
+      </form>
+
+      <form method="POST" class="card card-food text-center">
+        <div class="card-header">
+          <h2>Food</h2>
+          <span class="stats-text">Last 🍎: {{.Stats.LastSnack}}</span>
+          <span class="stats-text">Last 🍲: {{.Stats.LastMeal}}</span>
+        </div>
+        <div class="buttons">
+          <button type="submit" class="button" name="tally" value="9">Snack</button>
+          <button type="submit" class="button" name="tally" value="10">Meal</button>
+        </div>
+      </form>
+
+      <form method="POST" class="card card-hygiene text-center">
+        <div class="card-header">
+          <h2>Hygiene</h2>
+          <span class="stats-text">Last 🛁: {{.Stats.LastBath}}</span>
+          <span class="stats-text">Last 🦷: {{.Stats.LastBrush}}</span>
+        </div>
+        <div class="buttons">
+          <button type="submit" class="button" name="tally" value="14">Bath</button>
+          <button type="submit" class="button" name="tally" value="15">Brush</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="card text-center">
+      <div class="card-header">
+        <h2>Stats</h2>
+      </div>
+      
+      <div class="stats-grid">
+        <div class="stat-box">
+          <h3>12 Hours</h3>
+          <div class="mini-stats">
+            {{if or (eq .MilkSetting "bottle") (eq .MilkSetting "both")}}<span>🍼 {{.GeneratedStats.Last12HoursMilk}} oz</span>{{end}}
+            {{if or (eq .MilkSetting "nursing") (eq .MilkSetting "both")}}<span>🤱 {{.GeneratedStats.Last12HoursNurse}}</span>{{end}}
+            <span>🚽 {{.GeneratedStats.Last12HoursPee}}</span>
+            <span>💩 {{.GeneratedStats.Last12HoursPoo}}</span>
+          </div>
+        </div>
+        <div class="stat-box">
+          <h3>24 Hours</h3>
+          <div class="mini-stats">
+            {{if or (eq .MilkSetting "bottle") (eq .MilkSetting "both")}}<span>🍼 {{.GeneratedStats.Last24HoursMilk}} oz</span>{{end}}
+            {{if or (eq .MilkSetting "nursing") (eq .MilkSetting "both")}}<span>🤱 {{.GeneratedStats.Last24HoursNurse}}</span>{{end}}
+            <span>🚽 {{.GeneratedStats.Last24HoursPee}}</span>
+            <span>💩 {{.GeneratedStats.Last24HoursPoo}}</span>
+          </div>
+        </div>
+        <div class="stat-box">
+          <h3>Today</h3>
+          <div class="mini-stats">
+            {{if or (eq .MilkSetting "bottle") (eq .MilkSetting "both")}}<span>🍼 {{.GeneratedStats.TodayMilk}} oz</span>{{end}}
+            {{if or (eq .MilkSetting "nursing") (eq .MilkSetting "both")}}<span>🤱 {{.GeneratedStats.TodayNurse}}</span>{{end}}
+            <span>🚽 {{.GeneratedStats.TodayPee}}</span>
+            <span>💩 {{.GeneratedStats.TodayPoo}}</span>
+          </div>
+        </div>
+        <div class="stat-box">
+          <h3>Yesterday</h3>
+          <div class="mini-stats">
+            {{if or (eq .MilkSetting "bottle") (eq .MilkSetting "both")}}<span>🍼 {{.GeneratedStats.YesterdayMilk}} oz</span>{{end}}
+            {{if or (eq .MilkSetting "nursing") (eq .MilkSetting "both")}}<span>🤱 {{.GeneratedStats.YesterdayNurse}}</span>{{end}}
+            <span>🚽 {{.GeneratedStats.YesterdayPee}}</span>
+            <span>💩 {{.GeneratedStats.YesterdayPoo}}</span>
+          </div>
+        </div>
+        <div class="stat-box">
+          <h3>2 Days Ago</h3>
+          <div class="mini-stats">
+            {{if or (eq .MilkSetting "bottle") (eq .MilkSetting "both")}}<span>🍼 {{.GeneratedStats.TwoDaysAgoMilk}} oz</span>{{end}}
+            {{if or (eq .MilkSetting "nursing") (eq .MilkSetting "both")}}<span>🤱 {{.GeneratedStats.TwoDaysAgoNurse}}</span>{{end}}
+            <span>🚽 {{.GeneratedStats.TwoDaysAgoPee}}</span>
+            <span>💩 {{.GeneratedStats.TwoDaysAgoPoo}}</span>
+          </div>
+        </div>
+        <div class="stat-box">
+          <h3>3 Days Ago</h3>
+          <div class="mini-stats">
+            {{if or (eq .MilkSetting "bottle") (eq .MilkSetting "both")}}<span>🍼 {{.GeneratedStats.ThreeDaysAgoMilk}} oz</span>{{end}}
+            {{if or (eq .MilkSetting "nursing") (eq .MilkSetting "both")}}<span>🤱 {{.GeneratedStats.ThreeDaysAgoNurse}}</span>{{end}}
+            <span>🚽 {{.GeneratedStats.ThreeDaysAgoPee}}</span>
+            <span>💩 {{.GeneratedStats.ThreeDaysAgoPoo}}</span>
+          </div>
+        </div>
+        <div class="stat-box">
+          <h3 title="Calculated using data from previous 3 days. Requires at least 4 days of history.">3-Day Avg&nbsp; <span style="font-size: 0.7rem; opacity: 0.7; cursor: help;">ⓘ</span></h3>
+          <div class="mini-stats">
+            {{if or (eq .MilkSetting "bottle") (eq .MilkSetting "both")}}<span>🍼 {{.GeneratedStats.ThreeDayAvgMilk}} oz</span>{{end}}
+            {{if or (eq .MilkSetting "nursing") (eq .MilkSetting "both")}}<span>🤱 {{.GeneratedStats.ThreeDayAvgNurse}}</span>{{end}}
+            <span>🚽 {{.GeneratedStats.ThreeDayAvgPee}}</span>
+            <span>💩 {{.GeneratedStats.ThreeDayAvgPoo}}</span>
+          </div>
+        </div>
+        <div class="stat-box">
+          <h3 title="Calculated using data from previous 3 days. Requires at least 4 days of history.">Avg Gap&nbsp; <span style="font-size: 0.7rem; opacity: 0.7; cursor: help;">ⓘ</span></h3>
+          <div class="mini-stats">
+            {{if or (eq .MilkSetting "bottle") (eq .MilkSetting "both")}}<span>🍼 {{.GeneratedStats.AvgGapMilk}}</span>{{end}}
+            {{if or (eq .MilkSetting "nursing") (eq .MilkSetting "both")}}<span>🤱 {{.GeneratedStats.AvgGapNurse}}</span>{{end}}
+            <span>🚽 {{.GeneratedStats.AvgGapPee}}</span>
+            <span>💩 {{.GeneratedStats.AvgGapPoo}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card text-center">
+      <input type="checkbox" id="tallies-toggle" class="toggle-checkbox" hidden>
+      <label for="tallies-toggle" class="card-header toggle-label">
+        <h2>Tallies</h2>
+      </label>
+
+      <div class="toggle-content">
+        <div class="toggle-inner">
+          <form method="POST" style="margin-top: 1rem; margin-bottom: 1rem;">
+            <div class="undo-confirmation">
+              <input type="checkbox" id="confirm-undo" title="Please check this box if you want to undo" required>
+              <label for="confirm-undo">Confirm undo?</label>
+            </div>
+            <button type="submit" name="undo" value="true" class="button secondary" style="font-size: 0.8rem; padding: 0.5rem 1rem;">
+              Undo Latest Tally
+            </button>
+          </form>
+
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Time</th>
+                  <th>Tally</th>
+                </tr>
+              </thead>
+              <tbody>
+                {{range .Tallies}}
+                <tr>
+                  <td>{{.Time}}</td>
+                  <td>{{.Kind}}</td>
+                </tr>
+                {{end}}
+              </tbody>
+            </table>
+          </div>
+
+          <p class="muted-text">Only the latest {{.MaxTallies}} tallies are saved</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card text-center">
+      <div class="card-header">
+        <h2>Settings</h2>
+      </div>
+
+      <form method="POST">
+        <h3>Milk Setting</h3>
+        <p class="muted-text" style="margin-top: 0.5rem; margin-bottom: 1rem;">Current: {{.MilkSettingDisplay}}</p>
+        <div class="avatar-group" style="margin-bottom: 2rem;">
+          <label class="avatar-label" title="Bottle Only"><input type="radio" name="milk_setting" value="bottle" {{if eq .MilkSetting "bottle"}}checked{{end}}><span>🍼</span></label>
+          <label class="avatar-label" title="Nursing Only"><input type="radio" name="milk_setting" value="nursing" {{if eq .MilkSetting "nursing"}}checked{{end}}><span>🤱</span></label>
+          <label class="avatar-label" title="Both"><input type="radio" name="milk_setting" value="both" {{if eq .MilkSetting "both"}}checked{{end}}><span>🍼🤱</span></label>
+        </div>
+        <div class="text-center">
+          <button type="submit" class="button secondary">Update Milk Setting</button>
+        </div>
+      </form>
+
+      <hr style="border: none; border-top: 1px solid var(--card-border); margin: 2rem 0;">
+
+      <form method="POST">
+        <h3>Timezone</h3>
+        <p class="muted-text" style="margin-top: 0.5rem; margin-bottom: 1rem;">Current: {{.Timezone}}</p>
+        <div class="field">
+          <select id="timezone" name="timezone">
+            <option value=""></option>
+            <option value="Pacific/Honolulu">Pacific/Honolulu GMT-10:00</option>
+            <option value="America/Anchorage">America/Anchorage GMT-9:00</option>
+            <option value="America/Los_Angeles">America/Los_Angeles GMT-8:00</option>
+            <option value="America/Boise">America/Boise GMT-7:00</option>
+            <option value="America/Denver">America/Denver GMT-7:00</option>
+            <option value="America/Phoenix">America/Phoenix GMT-7:00</option>
+            <option value="America/Chicago">America/Chicago GMT-6:00</option>
+            <option value="America/Detroit">America/Detroit GMT-5:00</option>
+            <option value="America/New_York">America/New_York GMT-5:00</option>
+          </select>
+        </div>
+        <div class="text-center">
+          <button type="submit" class="button secondary">Update Timezone</button>
+        </div>
+      </form>
+
+      <hr style="border: none; border-top: 1px solid var(--card-border); margin: 2rem 0;">
+
+      <h3>Data</h3>
+      <p class="muted-text" style="margin-top: 0.5rem; margin-bottom: 1rem;">Download a raw backup of your data.</p>
+      <div class="text-center">
+        <a href="/export/{{.ID}}" download class="button secondary">Export Data</a>
+      </div>
+
+      <hr style="border: none; border-top: 1px solid var(--card-border); margin: 2rem 0;">
+
+      <form method="POST">
+        <h3 style="color: var(--milk-color);">Delete Tot</h3>
+        <p class="muted-text" style="margin-top: 0.5rem; margin-bottom: 1.5rem;">
+          Tots are automatically deleted after 6 months of inactivity.
+        </p>
+        <div class="undo-confirmation">
+          <input type="checkbox" id="confirm-delete" name="confirm_delete" value="true" title="Please check this box if you want to delete this Tot" required>
+          <label for="confirm-delete">Confirm deletion? (Can't be undone)</label>
+        </div>
+        <div class="text-center" style="padding-bottom: 1rem;">
+          <button type="submit" name="delete_tot" value="true" class="button" style="background-color: var(--milk-color); box-shadow: 0 4px 0 var(--milk-color-dark);">
+            Delete This Tot
+          </button>
+        </div>
+      </form>
+    </div>
+
+    {{if .FlashMessage}}
+    <div class="toast {{if .IsErrorFlash}}toast-error{{end}}">{{.FlashMessage}}</div>
+    {{end}}
+  </main>
+</body>
+</html>

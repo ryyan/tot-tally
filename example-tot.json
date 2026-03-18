@@ -1,23 +1,71 @@
 {
-  "ID": "6Id-73UGvzGgqBYSFiUlmnrmtBDBrxj0R-2ILF8elfnS",
-  "Name": "Goo goo Gaa gaa",
-  "Timezone": "America/Chicago",
-  "Tallies": [
-    { "Time": "2024-04-02T14:41:08.494285818Z", "Kind": "🍼 6" },
-    { "Time": "2024-04-02T14:41:05.655531818Z", "Kind": "🍲" },
-    { "Time": "2024-04-02T14:41:02.529955594Z", "Kind": "🍎" },
-    { "Time": "2024-04-02T14:40:59.361090603Z", "Kind": "🚽" },
-    { "Time": "2024-04-02T14:40:59.361091223Z", "Kind": "💩" },
-    { "Time": "2024-04-02T14:40:47.793107441Z", "Kind": "🦷" },
-    { "Time": "2024-04-02T14:40:39.747640064Z", "Kind": "🛁" }
+  "id": "018e6000-0000-7000-8000-000000000000",
+  "name": "👶",
+  "timezone": "America/Chicago",
+  "milkSetting": "both",
+  "tallies": [
+    {
+      "time": "2026-03-21T10:00:00Z",
+      "kind": "🍼6"
+    },
+    {
+      "time": "2026-03-21T07:30:00Z",
+      "kind": "🤱L"
+    },
+    {
+      "time": "2026-03-21T07:30:00Z",
+      "kind": "🚽"
+    },
+    {
+      "time": "2026-03-21T07:30:00Z",
+      "kind": "💩"
+    }
   ],
-  "Stats": {
-    "LastMilk": "2024-04-03T14:29:06.599559822Z",
-    "LastSnack": "2024-04-03T14:29:03.61579287Z",
-    "LastMeal": "2024-04-03T14:29:05.586448471Z",
-    "LastPee": "2024-04-03T14:29:07.797832251Z",
-    "LastPoo": "2024-04-03T14:29:07.797832251Z",
-    "LastBath": "2024-04-03T14:29:09.88315667Z",
-    "LastBrush": "2024-04-03T14:29:10.351526863Z"
-  }
+  "stats": {
+    "lastMilk": "2026-03-21T10:00:00Z",
+    "lastNurse": "2026-03-21T07:30:00Z",
+    "lastNurseSide": "L",
+    "lastSnack": null,
+    "lastMeal": null,
+    "lastPee": "2026-03-21T07:30:00Z",
+    "lastPoo": "2026-03-21T07:30:00Z",
+    "lastBath": "2026-03-20T19:00:00Z",
+    "lastBrush": "2026-03-21T07:00:00Z"
+  },
+  "generatedStats": {
+    "last12HoursMilk": "6",
+    "last12HoursNurse": "1",
+    "last12HoursPee": "1",
+    "last12HoursPoo": "1",
+    "last24HoursMilk": "24",
+    "last24HoursNurse": "4",
+    "last24HoursPee": "6",
+    "last24HoursPoo": "2",
+    "todayMilk": "6",
+    "todayNurse": "1",
+    "todayPee": "1",
+    "todayPoo": "1",
+    "yesterdayMilk": "28",
+    "yesterdayNurse": "6",
+    "yesterdayPee": "8",
+    "yesterdayPoo": "3",
+    "twoDaysAgoMilk": "26",
+    "twoDaysAgoNurse": "5",
+    "twoDaysAgoPee": "7",
+    "twoDaysAgoPoo": "2",
+    "threeDaysAgoMilk": "30",
+    "threeDaysAgoNurse": "7",
+    "threeDaysAgoPee": "9",
+    "threeDaysAgoPoo": "4",
+    "threeDayAvgMilk": "28",
+    "threeDayAvgNurse": "6",
+    "threeDayAvgPee": "8",
+    "threeDayAvgPoo": "3",
+    "avgGapMilk": "3h 15m",
+    "avgGapNurse": "2h 45m",
+    "avgGapPee": "2h 10m",
+    "avgGapPoo": "8h 30m"
+  },
+  "createdAt": "2026-03-20T12:00:00Z",
+  "updatedAt": "2026-03-21T10:00:00Z"
 }
